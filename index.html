@@ -8,17 +8,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      -webkit-tap-highlight-color: transparent;
-      touch-action: manipulation;
-    }
-    html, body {
-      height: 100dvh;
-      overscroll-behavior: contain;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+    html, body { height: 100dvh; overscroll-behavior: contain; }
     body {
       background: #0e0e14;
       color: #c8c0d8;
@@ -29,262 +20,329 @@
       flex-direction: column;
       align-items: center;
     }
-    .wrapper {
-      width: 100%;
-      max-width: 420px;
-    }
-    header {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      margin-bottom: 28px;
-    }
-    .title {
-      font-size: 1.4rem;
-      color: #f0c040;
-      letter-spacing: 0.1em;
-      text-align: center;
-    }
-    .sub {
-      font-size: 0.65rem;
-      color: #4a4560;
-      letter-spacing: 0.2em;
-      margin-top: 4px;
-    }
+    .wrapper { width: 100%; max-width: 420px; }
+    header { display: flex; align-items: center; justify-content: center; position: relative; margin-bottom: 28px; }
+    .title { font-size: 1.4rem; color: #f0c040; letter-spacing: 0.1em; text-align: center; }
+    .sub { font-size: 0.65rem; color: #4a4560; letter-spacing: 0.2em; margin-top: 4px; }
     .ham-btn {
-      position: absolute;
-      right: 0;
-      top: 0;
-      background: #16161f;
-      border: 1px solid #2a2a38;
-      border-radius: 7px;
-      padding: 8px 10px;
-      cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
+      position: absolute; right: 0; top: 0;
+      background: #16161f; border: 1px solid #2a2a38; border-radius: 7px;
+      padding: 8px 10px; cursor: pointer; display: flex; flex-direction: column; gap: 4px;
       z-index: 10;
     }
-    .ham-btn span {
-      display: block;
-      width: 18px;
-      height: 2px;
-      background: #c8c0d8;
-      border-radius: 2px;
-    }
-    .overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.6);
-      z-index: 100;
-    }
-    .overlay.on {
-      display: block;
-    }
+    .ham-btn span { display: block; width: 18px; height: 2px; background: #c8c0d8; border-radius: 2px; }
+    .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 100; }
+    .overlay.on { display: block; }
     .drawer {
-      position: fixed;
-      top: 0;
-      right: -310px;
-      bottom: 0;
-      width: 290px;
-      height: 100dvh;
-      background: #11111a;
-      border-left: 1px solid #2a2a38;
-      z-index: 101;
-      transition: right 0.25s ease;
-      will-change: transform;
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-      padding: 20px 0;
+      position: fixed; top: 0; right: -310px; bottom: 0; width: 290px; height: 100dvh;
+      background: #11111a; border-left: 1px solid #2a2a38; z-index: 101;
+      transition: right 0.25s ease; will-change: transform; overflow-y: auto;
+      -webkit-overflow-scrolling: touch; padding: 20px 0;
     }
-    .drawer.on {
-      right: 0;
+    .drawer.on { right: 0; }
+    .drawer-title { font-size: 0.75rem; color: #4a4560; letter-spacing: 0.18em; padding: 0 18px 12px; border-bottom: 1px solid #2a2a38; margin-bottom: 8px; }
+    .drow {
+      display: flex; align-items: center; gap: 8px; padding: 10px 14px; cursor: pointer;
     }
-    .drawer-title {
-      font-size: 0.75rem;
-      color: #4a4560;
-      letter-spacing: 0.18em;
-      padding: 0 18px 12px;
-      border-bottom: 1px solid #2a2a38;
-      margin-bottom: 8px;
+    .drow.cur { background: rgba(240,192,64,0.1); }
+    .drow-num { font-size: 0.65rem; color: #4a4560; min-width: 20px; }
+    .drow.cur .drow-num { color: #f0c040; }
+    .drow-chips { display: flex; gap: 3px; }
+    .drow-cur-label { font-size: 0.62rem; color: #f0c040; margin-left: auto; }
+    .chip {
+      width: 22px; height: 22px; border-radius: 4px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.72rem; font-weight: bold;
     }
-    .counter {
-      text-align: center;
-      margin-bottom: 16px;
+    .c1 { color: #60d0f0; background: rgba(96,208,240,0.12); border: 1px solid rgba(96,208,240,0.25); }
+    .c2 { color: #f07090; background: rgba(240,112,144,0.12); border: 1px solid rgba(240,112,144,0.25); }
+    .search-row { display: flex; gap: 8px; margin-bottom: 8px; }
+    .sinput {
+      flex: 1; background: #16161f; border: 1px solid #2a2a38; border-radius: 8px;
+      padding: 11px 14px; font-family: "DotGothic16", monospace; font-size: 1rem;
+      color: #c8c0d8; letter-spacing: 0.18em; outline: none; -webkit-appearance: none;
     }
-    .cnum {
-      font-size: 3rem;
-      line-height: 1;
-      color: #f0c040;
+    .sinput:focus { border-color: #f0c040; }
+    .sinput.err { border-color: #f07090; }
+    .sbtn {
+      padding: 11px 16px; background: #f0c040; color: #0e0e14; border: none; border-radius: 8px;
+      font-family: "DotGothic16", monospace; font-size: 0.8rem; cursor: pointer;
     }
-    .cof {
-      font-size: 0.68rem;
-      color: #4a4560;
-      letter-spacing: 0.15em;
-      margin-top: 4px;
+    .shint { font-size: 0.62rem; color: #4a4560; letter-spacing: 0.1em; margin-bottom: 14px; min-height: 16px; }
+    .shint.ok { color: #f0c040; }
+    .shint.no { color: #f07090; }
+    .rarea { margin-bottom: 20px; }
+    .rgroup { margin-bottom: 14px; }
+    .rlabel { font-size: 0.6rem; color: #4a4560; letter-spacing: 0.12em; margin-bottom: 6px; }
+    .rchain { display: flex; flex-direction: column; gap: 3px; }
+    .crow {
+      display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 7px;
+      background: #16161f; border: 1px solid #2a2a38; cursor: pointer;
     }
+    .crow.match { border-color: rgba(240,192,64,0.4); background: rgba(240,192,64,0.05); }
+    .crow.cur { border-color: #f0c040; background: rgba(240,192,64,0.1); }
+    .crow-num { font-size: 0.65rem; color: #4a4560; min-width: 20px; }
+    .crow.match .crow-num, .crow.cur .crow-num { color: #f0c040; }
+    .crow-chips { display: flex; gap: 3px; }
+    .cchip {
+      width: 24px; height: 24px; border-radius: 4px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.78rem; font-weight: bold;
+    }
+    .cc1 { color: #60d0f0; background: rgba(96,208,240,0.12); border: 1px solid rgba(96,208,240,0.25); }
+    .cc2 { color: #f07090; background: rgba(240,112,144,0.12); border: 1px solid rgba(240,112,144,0.25); }
+    .rdiv { font-size: 0.58rem; color: #4a4560; padding: 2px 10px; opacity: 0.5; }
+    .counter { text-align: center; margin-bottom: 16px; }
+    .cnum { font-size: 3rem; line-height: 1; color: #f0c040; }
+    .cof { font-size: 0.68rem; color: #4a4560; letter-spacing: 0.15em; margin-top: 4px; }
     .seqdis {
-      background: #16161f;
-      border: 1px solid #2a2a38;
-      border-radius: 10px;
-      padding: 16px 18px;
-      margin-bottom: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      min-height: 64px;
+      background: #16161f; border: 1px solid #2a2a38; border-radius: 10px;
+      padding: 16px 18px; margin-bottom: 20px; display: flex; align-items: center;
+      justify-content: space-between; gap: 8px; min-height: 64px;
     }
     .dbtn {
-      flex: 1;
-      height: 38px;
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1rem;
-      font-weight: bold;
+      flex: 1; height: 38px; border-radius: 6px; display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; font-weight: bold;
     }
-    .d1 {
-      color: #60d0f0;
-      background: rgba(96,208,240,0.12);
-      border: 1px solid rgba(96,208,240,0.25);
-    }
-    .d2 {
-      color: #f07090;
-      background: rgba(240,112,144,0.12);
-      border: 1px solid rgba(240,112,144,0.25);
-    }
-    .ctls {
-      display: flex;
-      gap: 10px;
-    }
+    .d1 { color: #60d0f0; background: rgba(96,208,240,0.12); border: 1px solid rgba(96,208,240,0.25); }
+    .d2 { color: #f07090; background: rgba(240,112,144,0.12); border: 1px solid rgba(240,112,144,0.25); }
+    .ctls { display: flex; gap: 10px; }
     .cbtn {
-      flex: 1;
-      padding: 13px 8px;
-      border: none;
-      border-radius: 8px;
-      font-family: "DotGothic16", monospace;
-      font-size: 0.85rem;
-      cursor: pointer;
+      flex: 1; padding: 13px 8px; border: none; border-radius: 8px;
+      font-family: "DotGothic16", monospace; font-size: 0.85rem; cursor: pointer;
     }
-    .cprev {
-      background: #16161f;
-      color: #c8c0d8;
-      border: 1px solid #2a2a38;
-    }
-    .cnext {
-      background: #f0c040;
-      color: #0e0e14;
-      font-weight: bold;
-    }
+    .cprev { background: #16161f; color: #c8c0d8; border: 1px solid #2a2a38; }
+    .cnext { background: #f0c040; color: #0e0e14; font-weight: bold; }
     .creset {
-      flex: 0 0 auto;
-      padding: 13px 16px;
-      background: transparent;
-      color: #4a4560;
-      border: 1px solid #2a2a38;
-      border-radius: 8px;
-      font-family: "DotGothic16", monospace;
-      font-size: 0.85rem;
-      cursor: pointer;
+      flex: 0 0 auto; padding: 13px 16px; background: transparent; color: #4a4560;
+      border: 1px solid #2a2a38; border-radius: 8px; font-family: "DotGothic16", monospace;
+      font-size: 0.85rem; cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <div class="wrapper">
-    <header>
-      <div>
-        <div class="title">🥚 참참참</div>
-        <div class="sub">TAMAGOTCHI GIMMICK TRACKER</div>
-      </div>
-      <button class="ham-btn" id="hamBtn">
-        <span></span><span></span><span></span>
-      </button>
-    </header>
-
-    <div class="overlay" id="overlay"></div>
-    <div class="drawer" id="drawer">
-      <div class="drawer-title">전체 시퀀스 목록</div>
-      <div id="drawerList"></div>
+<div class="wrapper">
+  <header>
+    <div>
+      <div class="title">🥚 참참참</div>
+      <div class="sub">TAMAGOTCHI GIMMICK TRACKER</div>
     </div>
+    <button class="ham-btn" id="hamBtn">
+      <span></span><span></span><span></span>
+    </button>
+  </header>
 
-    <div class="counter">
-      <div class="cnum" id="cnum">1</div>
-      <div class="cof">/ 18 번째 기믹</div>
-    </div>
-    <div class="seqdis" id="seqdis"></div>
-
-    <div class="ctls">
-      <button class="cbtn cprev" id="prevBtn">◀ 이전</button>
-      <button class="cbtn cnext" id="nextBtn">다음 ▶</button>
-      <button class="creset" id="resetBtn">↺</button>
-    </div>
+  <div class="overlay" id="overlay"></div>
+  <div class="drawer" id="drawer">
+    <div class="drawer-title">전체 시퀀스 목록</div>
+    <div id="drawerList"></div>
   </div>
 
-  <script>
-    const SEQS = [
-      [2,2,2,1,1], [1,2,1,2,1], [2,2,1,1,2], [1,2,1,2,2], [2,1,1,1,2],
-      [1,2,1,2,2], [1,1,2,1,2], [1,2,2,2,1], [1,1,2,1,2], [1,2,2,1,1],
-      [2,1,2,1,2], [2,2,1,1,1], [2,1,2,1,2], [2,1,1,2,1], [2,1,2,2,2],
-      [1,1,1,2,1], [2,1,2,2,1], [1,2,1,2,1]
-    ];
-    const N = SEQS.length;
-    let cur = 0;
+  <div class="search-row">
+    <input class="sinput" id="sinput" type="text" inputmode="numeric" maxlength="5" placeholder="12121">
+    <button class="sbtn" id="sbtn">찾기</button>
+  </div>
+  <div class="shint" id="shint">숫자 5자리 입력 후 찾기</div>
+  <div class="rarea" id="rarea"></div>
 
-    try {
-      const stored = localStorage.getItem("tg");
-      if (stored !== null) {
-        cur = parseInt(stored, 10) % N;
-        if (isNaN(cur)) cur = 0;
-      }
-    } catch (e) {
-      cur = 0;
-    }
+  <div class="counter">
+    <div class="cnum" id="cnum">1</div>
+    <div class="cof">/ 18 번째 기믹</div>
+  </div>
+  <div class="seqdis" id="seqdis"></div>
 
-    function save() {
-      try {
-        localStorage.setItem("tg", String(cur));
-      } catch (e) {}
-    }
+  <div class="ctls">
+    <button class="cbtn cprev" id="prevBtn">◀ 이전</button>
+    <button class="cbtn cnext" id="nextBtn">다음 ▶</button>
+    <button class="creset" id="resetBtn">↺</button>
+  </div>
+</div>
 
-    function render() {
-      document.getElementById("cnum").textContent = cur + 1;
+<script>
+const SEQS = [
+  [2,2,2,1,1],[1,2,1,2,1],[2,2,1,1,2],[1,2,1,2,2],[2,1,1,1,2],
+  [1,2,1,2,2],[1,1,2,1,2],[1,2,2,2,1],[1,1,2,1,2],[1,2,2,1,1],
+  [2,1,2,1,2],[2,2,1,1,1],[2,1,2,1,2],[2,1,1,2,1],[2,1,2,2,2],
+  [1,1,1,2,1],[2,1,2,2,1],[1,2,1,2,1]
+];
+const N = SEQS.length;
+let cur = 0;
 
-      let h = "";
-      SEQS[cur].forEach(v => {
-        h += `<div class="dbtn d${v}">${v}</div>`;
-      });
-      document.getElementById("seqdis").innerHTML = h;
-    }
+try {
+  const stored = localStorage.getItem("tg");
+  if (stored !== null) cur = parseInt(stored, 10) % N;
+  if (isNaN(cur)) cur = 0;
+} catch (e) { cur = 0; }
 
-    // 햄버거 버튼 (drawer 열기/닫기) - 지금은 간단히만
-    document.getElementById("hamBtn").addEventListener("click", () => {
-      alert("전체 목록은 준비 중이에요~");
+function save() {
+  try { localStorage.setItem("tg", String(cur)); } catch (e) {}
+}
+
+function sk(s) { return s.join(""); }
+
+function chipHTML(d, big) {
+  const cls = big ? `cchip cc${d}` : `chip c${d}`;
+  return `<div class="${cls}">${d}</div>`;
+}
+
+function render() {
+  document.getElementById("cnum").textContent = cur + 1;
+  let h = "";
+  SEQS[cur].forEach(v => h += `<div class="dbtn d${v}">${v}</div>`);
+  document.getElementById("seqdis").innerHTML = h;
+
+  // drawer와 rarea의 cur 클래스 업데이트 (간단히)
+  document.querySelectorAll(".crow, .drow").forEach(el => {
+    const idx = parseInt(el.dataset.i || 0, 10);
+    el.classList.toggle("cur", idx === cur);
+  });
+}
+
+function buildDrawer() {
+  let h = "";
+  SEQS.forEach((seq, i) => {
+    let chips = "";
+    seq.forEach(v => chips += chipHTML(v, false));
+    h += `<div class="drow${i === cur ? " cur" : ""}" data-i="${i}">
+      <span class="drow-num">${i + 1}</span>
+      <div class="drow-chips">${chips}</div>
+      <span class="drow-cur-label" style="${i !== cur ? "display:none" : ""}">◀ 현재</span>
+    </div>`;
+  });
+  document.getElementById("drawerList").innerHTML = h;
+
+  document.querySelectorAll(".drow").forEach(el => {
+    el.addEventListener("click", () => {
+      cur = parseInt(el.dataset.i, 10);
+      save();
+      render();
+      closeDrawer();
     });
+  });
+}
 
-    document.getElementById("prevBtn").addEventListener("click", () => {
-      cur = (cur - 1 + N) % N;
+function openDrawer() {
+  buildDrawer();
+  document.getElementById("drawer").classList.add("on");
+  document.getElementById("overlay").classList.add("on");
+}
+
+function closeDrawer() {
+  document.getElementById("drawer").classList.remove("on");
+  document.getElementById("overlay").classList.remove("on");
+}
+
+document.getElementById("hamBtn").addEventListener("click", () => {
+  if (document.getElementById("drawer").classList.contains("on")) {
+    closeDrawer();
+  } else {
+    openDrawer();
+  }
+});
+
+document.getElementById("overlay").addEventListener("click", closeDrawer);
+
+document.getElementById("prevBtn").addEventListener("click", () => {
+  cur = (cur - 1 + N) % N;
+  save();
+  render();
+});
+
+document.getElementById("nextBtn").addEventListener("click", () => {
+  cur = (cur + 1) % N;
+  save();
+  render();
+});
+
+document.getElementById("resetBtn").addEventListener("click", () => {
+  cur = 0;
+  save();
+  document.getElementById("rarea").innerHTML = "";
+  document.getElementById("shint").textContent = "숫자 5자리 입력 후 찾기";
+  document.getElementById("shint").className = "shint";
+  document.getElementById("sinput").value = "";
+  document.getElementById("sinput").className = "sinput";
+  render();
+});
+
+document.getElementById("sinput").addEventListener("input", function() {
+  this.value = this.value.replace(/[^12]/g, "");
+  this.className = "sinput";
+  document.getElementById("shint").textContent = "숫자 5자리 입력 후 찾기";
+  document.getElementById("shint").className = "shint";
+});
+
+document.getElementById("sinput").addEventListener("keydown", e => {
+  if (e.key === "Enter") doSearch();
+});
+
+document.getElementById("sbtn").addEventListener("click", doSearch);
+
+function makeCrow(idx, isMatch) {
+  const cls = `crow${isMatch ? " match" : ""}${idx === cur ? " cur" : ""}`;
+  let chips = "";
+  SEQS[idx].forEach(v => chips += chipHTML(v, true));
+  return `<div class="${cls}" data-i="${idx}">
+    <span class="crow-num">${idx + 1}</span>
+    <div class="crow-chips">${chips}</div>
+  </div>`;
+}
+
+function doSearch() {
+  const raw = document.getElementById("sinput").value.trim();
+  const hint = document.getElementById("shint");
+  const area = document.getElementById("rarea");
+
+  if (raw.length !== 5) {
+    document.getElementById("sinput").className = "sinput err";
+    hint.textContent = "5자리 입력해줘 (예: 12121)";
+    hint.className = "shint no";
+    area.innerHTML = "";
+    return;
+  }
+
+  const q = raw.split("").map(Number);
+  const matches = [];
+  for (let i = 0; i < N; i++) {
+    if (SEQS[i].every((v, j) => v === q[j])) matches.push(i);
+  }
+
+  if (!matches.length) {
+    document.getElementById("sinput").className = "sinput err";
+    hint.textContent = "일치하는 시퀀스 없음";
+    hint.className = "shint no";
+    area.innerHTML = "";
+    return;
+  }
+
+  document.getElementById("sinput").className = "sinput";
+  hint.textContent = matches.length > 1 ? `${matches.length}곳 발견` : "1곳 발견";
+  hint.className = "shint ok";
+
+  let h = "";
+  matches.forEach((mi, gi) => {
+    const label = matches.length > 1 ? `발견 ${gi + 1} — ${mi + 1}번째` : `${mi + 1}번째`;
+    h += `<div class="rgroup"><div class="rlabel">${label}</div><div class="rchain">`;
+    for (let k = 0; k < N; k++) {
+      const idx = (mi + k) % N;
+      if (k === 1) h += `<div class="rdiv">↓ 이후</div>`;
+      h += makeCrow(idx, k === 0);
+      if (k >= 5) break;  // 너무 길어지지 않게 제한 (원래 로직보다 단순화)
+    }
+    h += "</div></div>";
+  });
+  area.innerHTML = h;
+
+  document.querySelectorAll(".crow").forEach(el => {
+    el.addEventListener("click", () => {
+      cur = parseInt(el.dataset.i, 10);
       save();
       render();
     });
+  });
+}
 
-    document.getElementById("nextBtn").addEventListener("click", () => {
-      cur = (cur + 1) % N;
-      save();
-      render();
-    });
-
-    document.getElementById("resetBtn").addEventListener("click", () => {
-      cur = 0;
-      save();
-      render();
-    });
-
-    // 페이지 로드되자마자 보이게!
-    render();
-  </script>
+render();  // 초기 렌더링
+</script>
 </body>
 </html>
