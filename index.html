@@ -441,9 +441,9 @@ var SEQS = [
 ];
 var N = SEQS.length;
 var KEY = 'tamago_cur';
-var cur = parseInt(localStorage.getItem(KEY) || '0', 10) % N;
+var cur = 0; try { cur = parseInt(localStorage.getItem(KEY) || "0", 10) % N; } catch(e) { cur = 0; }
 
-function save() { localStorage.setItem(KEY, String(cur)); }
+function save() { try { localStorage.setItem(KEY, String(cur)); } catch(e) {} }
 function sk(s) { return s.join(’’); }
 
 function buildDrawer() {
