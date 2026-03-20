@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>참참참 기믹 트래커</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DotGothic16&family=Noto+Sans+KR:wght@300;400&display=swap');
+  :root {
+    --bg: #0e0e14; --panel: #16161f; --accent: #f0c040;
+    --dim: #2a2a38; --text: #c8c0d8; --muted: #4a4560;
+    --one: #60d0f0; --two: #f07090;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif;
+    min-height: 100vh; display: flex; flex-direction: column;
+    align-items: center; padding: 36px 16px 60px;
+  }
+  .wrapper { width: 100%; max-width: 420px; }
+
+/* ── header ── */
+header {
+display: flex; align-items: center; justify-content: center;
+position: relative; margin-bottom: 28px;
+}
+.title {
+font-family: ‘DotGothic16’, monospace; font-size: 1.4rem;
+color: var(–accent); letter-spacing: 0.1em;
+text-shadow: 0 0 12px rgba(240,192,64,0.4);
+text-align: center;
+}
+.sub { font-size: 0.65rem; color: var(–muted); letter-spacing: 0.22em; margin-top: 3px; }
+.header-inner { display: flex; flex-direction: column; align-items: center; }
+.hamburger {
+position: absolute; right: 0; top: 0;
+background: var(–panel); border: 1px solid var(–dim);
+border-radius: 7px; padding: 8px 10px;
+cursor: pointer; display: flex; flex-direction: column; gap: 4px;
+transition: border-color 0.15s;
+}
+.hamburger:hover { border-color: var(–muted); }
+.hamburger span {
+display: block; width: 18px; height: 2px;
+background: var(–text); border-radius: 2px;
+transition: background 0.15s;
+}
+.hamburger.open span { background: var(–accent); }
+
+/* ── drawer ── */
+.drawer-overlay {
+display: none; position: fixed; inset: 0;
+background: rgba(0,0,0,0.55); z-index: 100;
+}
+.drawer-overlay.show { display: block; }
+.drawer {
+position: fixed; top: 0; right: -320px; bottom: 0;
+width: 300px; background: #11111a;
+border-left: 1px solid var(–dim);
+z-index: 101; transition: right 0.25s cubic-bezier(.4,0,.2,1);
+display: flex; flex-direction: column;
+padding: 24px 0 24px;
+overflow: hidden;
+}
+.drawer.open { right: 0; }
+.drawer-title {
+font-family: ‘DotGothic16’, monospace; font-size: 0.8rem;
+color: var(–muted); letter-spacing: 0.18em;
+padding: 0 20px 14px; border-bottom: 1px solid var(–dim);
+}
+.drawer-list { overflow-y: auto; flex: 1; padding: 10px 12px; }
+.drawer-row {
+display: flex; align-items: center; gap: 8px;
+padding: 7px 8px; border-radius: 6px;
+cursor: pointer; transition: background 0.1s;
+margin-bottom: 2px;
+}
+.drawer-row:hover { background: rgba(255,255,255,0.04); }
+.drawer-row.is-current { background: rgba(240,192,64,0.1); }
+.drawer-num {
+font-family: ‘DotGothic16’, monospace; font-size: 0.65rem;
+color: var(–muted); min-width: 20px;
+}
+.drawer-row.is-current .drawer-num { color: var(–accent); }
+.drawer-seq { display: flex; gap: 3px; }
+.chip {
+width: 22px; height: 22px; border-radius: 4px;
+display: flex; align-items: center; justify-content: center;
+font-family: ‘DotGothic16’, monospace; font-size: 0.72rem; font-weight: bold;
+}
+.c1 { color: var(–one); background: rgba(96,208,240,0.1); border: 1px solid rgba(96,208,240,0.2); }
+.c2 { color: var(–two); background: rgba(240,112,144,0.1); border: 1px solid rgba(240,112,144,0.2); }
+.drawer-row.is-current .c1 { border-color: rgba(96,208,240,0.5); }
+.drawer-row.is-current .c2 { border-color: rgba(240,112,144,0.5); }
+.cur-arrow {
+font-family: ‘DotGothic16’, monospace; font-size: 0.65rem;
+color: var(–accent); margin-left: auto;
+}
+
+/* ── 검색 ── */
+.search-wrap { display: flex; gap: 8px; margin-bottom: 8px; }
+.search-input {
+flex: 1; background: var(–panel); border: 1px solid var(–dim);
+border-radius: 8px; padding: 11px 14px;
+font-family: ‘DotGothic16’, monospace; font-size: 1rem;
+color: var(–text); letter-spacing: 0.18em; outline: none;
+transition: border-color 0.15s;
+}
+.search-input::placeholder { color: var(–muted); }
+.search-input:focus { border-color: var(–accent); }
+.search-input.error { border-color: var(–two); }
+.btn-search {
+padding: 11px 16px; background: var(–accent); color: #0e0e14;
+border: none; border-radius: 8px;
+font-family: ‘DotGothic16’, monospace; font-size: 0.8rem;
+cursor: pointer; transition: transform 0.1s;
+}
+.btn-search:active { transform: scale(0.96); }
+.search-hint {
+font-size: 0.62rem; color: var(–muted);
+letter-spacing: 0.1em; margin-bottom: 14px; min-height: 16px;
+}
+.search-hint.found { color: var(–accent); }
+.search-hint.notfound { color: var(–two); }
+
+/* ── 검색 결과 체인 ── */
+.result-area { margin-bottom: 24px; }
+.result-group { margin-bottom: 16px; }
+.result-group-label {
+font-family: ‘DotGothic16’, monospace; font-size: 0.6rem;
+color: var(–muted); letter-spacing: 0.14em; margin-bottom: 6px;
+}
+.chain { display: flex; flex-direction: column; gap: 3px; }
+.chain-row {
+display: flex; align-items: center; gap: 8px;
+padding: 7px 10px; border-radius: 7px;
+background: var(–panel); border: 1px solid var(–dim);
+cursor: pointer; transition: border-color 0.12s, background 0.12s;
+position: relative;
+}
+.chain-row:hover { border-color: var(–muted); }
+.chain-row.is-match { border-color: rgba(240,192,64,0.45); background: rgba(240,192,64,0.05); }
+.chain-row.is-current { border-color: var(–accent) !important; background: rgba(240,192,64,0.11) !important; }
+.chain-arrow { font-size: 0.6rem; color: var(–muted); padding: 0 2px; align-self: center; }
+.chain-num {
+font-family: ‘DotGothic16’, monospace; font-size: 0.68rem;
+color: var(–muted); min-width: 20px;
+}
+.chain-row.is-match .chain-num { color: var(–accent); }
+.chain-row.is-current .chain-num { color: var(–accent); }
+.chain-seq { display: flex; gap: 3px; }
+.diverge-label {
+font-family: ‘DotGothic16’, monospace; font-size: 0.58rem;
+color: var(–muted); padding: 2px 10px; letter-spacing: 0.1em; opacity: 0.55;
+}
+
+/* ── 메인 ── */
+.counter { text-align: center; margin-bottom: 16px; }
+.counter-num {
+font-family: ‘DotGothic16’, monospace; font-size: 3rem; line-height: 1;
+color: var(–accent); text-shadow: 0 0 20px rgba(240,192,64,0.35);
+}
+.counter-of { font-size: 0.68rem; color: var(–muted); letter-spacing: 0.15em; margin-top: 4px; }
+.seq-display {
+background: var(–panel); border: 1px solid var(–dim);
+border-radius: 10px; padding: 16px 18px; margin-bottom: 20px;
+display: flex; align-items: center; justify-content: space-between; gap: 8px;
+min-height: 64px; position: relative;
+}
+.seq-display::before {
+content: ‘’; position: absolute; left: 0; top: 0; bottom: 0;
+width: 3px; background: var(–accent); border-radius: 2px 0 0 2px;
+}
+.dir-btn {
+flex: 1; height: 38px; border-radius: 6px;
+display: flex; align-items: center; justify-content: center;
+font-family: ‘DotGothic16’, monospace; font-size: 1rem; font-weight: bold;
+}
+.d1 { color: var(–one); background: rgba(96,208,240,0.1); border: 1px solid rgba(96,208,240,0.25); }
+.d2 { color: var(–two); background: rgba(240,112,144,0.1); border: 1px solid rgba(240,112,144,0.25); }
+
+/* ── 컨트롤 ── */
+.controls { display: flex; gap: 10px; }
+.btn {
+flex: 1; padding: 13px 8px; border: none; border-radius: 8px;
+font-family: ‘DotGothic16’, monospace; font-size: 0.85rem;
+cursor: pointer; letter-spacing: 0.06em; transition: transform 0.1s;
+}
+.btn:active { transform: scale(0.97); }
+.btn-prev { background: var(–panel); color: var(–text); border: 1px solid var(–dim); }
+.btn-next { background: var(–accent); color: #0e0e14; font-weight: bold; box-shadow: 0 3px 14px rgba(240,192,64,0.3); }
+.btn-reset {
+flex: 0 0 auto; padding: 13px 16px;
+background: transparent; color: var(–muted);
+border: 1px solid var(–dim); border-radius: 8px;
+font-family: ‘DotGothic16’, monospace; font-size: 0.85rem;
+cursor: pointer; transition: color 0.15s, border-color 0.15s;
+}
+.btn-reset:hover { color: var(–text); border-color: var(–muted); }
+</style>
+
+</head>
+<body>
+<div class="wrapper">
+
+  <header>
+    <div class="header-inner">
+      <div class="title">🥚 참참참</div>
+      <div class="sub">TAMAGOTCHI GIMMICK TRACKER</div>
+    </div>
+    <button class="hamburger" id="hamburger" onclick="toggleDrawer()">
+      <span></span><span></span><span></span>
+    </button>
+  </header>
+
+  <!-- 전체 목록 드로어 -->
+
+  <div class="drawer-overlay" id="overlay" onclick="closeDrawer()"></div>
+  <div class="drawer" id="drawer">
+    <div class="drawer-title">전체 시퀀스 목록</div>
+    <div class="drawer-list" id="drawer-list"></div>
+  </div>
+
+  <!-- 검색 -->
+
+  <div class="search-wrap">
+    <input class="search-input" id="search-input" type="text" maxlength="5" placeholder="12121"
+      oninput="onSearchInput(this)" onkeydown="if(event.key==='Enter') doSearch()">
+    <button class="btn-search" onclick="doSearch()">찾기</button>
+  </div>
+  <div class="search-hint" id="search-hint">숫자 5자리 입력 후 찾기</div>
+  <div class="result-area" id="result-area"></div>
+
+  <!-- 현재 위치 -->
+
+  <div class="counter">
+    <div class="counter-num" id="cur-num">1</div>
+    <div class="counter-of">/ 18 번째 기믹</div>
+  </div>
+  <div class="seq-display" id="seq-display"></div>
+
+  <div class="controls">
+    <button class="btn btn-prev" id="btn-prev" onclick="move(-1)">◀ 이전</button>
+    <button class="btn btn-next" onclick="move(1)">다음 ▶</button>
+    <button class="btn-reset" onclick="resetAll()" title="처음으로">↺</button>
+  </div>
+</div>
+
+<script>
+const SEQS = [
+  [2,2,2,1,1],[1,2,1,2,1],[2,2,1,1,2],[1,2,1,2,2],[2,1,1,1,2],
+  [1,2,1,2,2],[1,1,2,1,2],[1,2,2,2,1],[1,1,2,1,2],[1,2,2,1,1],
+  [2,1,2,1,2],[2,2,1,1,1],[2,1,2,1,2],[2,1,1,2,1],[2,1,2,2,2],
+  [1,1,1,2,1],[2,1,2,2,1],[1,2,1,2,1],
+];
+const N = SEQS.length;
+const KEY = 'tamago_cur';
+let cur = parseInt(localStorage.getItem(KEY) || '0', 10) % N;
+
+function save() { localStorage.setItem(KEY, String(cur)); }
+function sk(s) { return s.join(''); }
+
+// ── 드로어 ──
+function buildDrawer() {
+  const list = document.getElementById('drawer-list');
+  list.innerHTML = SEQS.map((seq, i) => {
+    const chips = seq.map(d => `<div class="chip c${d}">${d}</div>`).join('');
+    const isc = i === cur;
+    return `<div class="drawer-row${isc?' is-current':''}" onclick="jumpTo(${i});closeDrawer()">
+      <span class="drawer-num">${i+1}</span>
+      <div class="drawer-seq">${chips}</div>
+      ${isc ? '<span class="cur-arrow">◀ 현재</span>' : ''}
+    </div>`;
+  }).join('');
+}
+function toggleDrawer() {
+  const open = document.getElementById('drawer').classList.toggle('open');
+  document.getElementById('overlay').classList.toggle('show', open);
+  document.getElementById('hamburger').classList.toggle('open', open);
+  if (open) buildDrawer();
+}
+function closeDrawer() {
+  document.getElementById('drawer').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+  document.getElementById('hamburger').classList.remove('open');
+}
+
+// ── 렌더 ──
+function render() {
+  document.getElementById('cur-num').textContent = String(cur + 1);
+  document.getElementById('seq-display').innerHTML =
+    SEQS[cur].map(d => `<div class="dir-btn d${d}">${d}</div>`).join('');
+  // 검색 결과 현재 위치 갱신
+  document.querySelectorAll('.chain-row[data-idx]').forEach(r => {
+    r.classList.toggle('is-current', parseInt(r.dataset.idx) === cur);
+  });
+  document.querySelectorAll('.drawer-row').forEach((r, i) => {
+    r.classList.toggle('is-current', i === cur);
+  });
+}
+
+function move(dir) { cur = (cur + dir + N) % N; save(); render(); }
+
+function jumpTo(idx) { cur = idx; save(); render(); }
+
+function resetAll() {
+  cur = 0; save();
+  document.getElementById('result-area').innerHTML = '';
+  document.getElementById('search-hint').textContent = '숫자 5자리 입력 후 찾기';
+  document.getElementById('search-hint').className = 'search-hint';
+  document.getElementById('search-input').value = '';
+  document.getElementById('search-input').className = 'search-input';
+  render();
+}
+
+function onSearchInput(el) {
+  el.value = el.value.replace(/[^12]/g, '');
+  el.className = 'search-input';
+  document.getElementById('search-hint').textContent = '숫자 5자리 입력 후 찾기';
+  document.getElementById('search-hint').className = 'search-hint';
+}
+
+function chipHTML(d) { return `<div class="chip c${d}">${d}</div>`; }
+
+function makeChainRow(idx, isMatch) {
+  const isc = idx === cur;
+  const cls = ['chain-row', isMatch?'is-match':'', isc?'is-current':''].filter(Boolean).join(' ');
+  const chips = SEQS[idx].map(chipHTML).join('');
+  return `<div class="${cls}" data-idx="${idx}" onclick="jumpTo(${idx})">
+    <span class="chain-num">${idx+1}</span>
+    <div class="chain-seq">${chips}</div>
+  </div>`;
+}
+
+function doSearch() {
+  const raw = document.getElementById('search-input').value.trim();
+  const hint = document.getElementById('search-hint');
+  const area = document.getElementById('result-area');
+  const inp  = document.getElementById('search-input');
+
+  if (raw.length !== 5) {
+    inp.className = 'search-input error';
+    hint.textContent = '5자리를 모두 입력해줘 (예: 12121)';
+    hint.className = 'search-hint notfound';
+    area.innerHTML = ''; return;
+  }
+
+  const query = raw.split('').map(Number);
+  const matches = SEQS.reduce((acc, seq, i) =>
+    seq.every((v,j) => v===query[j]) ? [...acc,i] : acc, []);
+
+  if (!matches.length) {
+    inp.className = 'search-input error';
+    hint.textContent = '일치하는 시퀀스 없음';
+    hint.className = 'search-hint notfound';
+    area.innerHTML = ''; return;
+  }
+
+  inp.className = 'search-input';
+  hint.textContent = matches.length > 1
+    ? `${matches.length}곳 발견 — 이후 시퀀스 비교`
+    : `1곳 발견 — 이후 시퀀스`;
+  hint.className = 'search-hint found';
+
+  // 각 매칭마다 이후 체인 수집 (루프, 최대 N-1개)
+  // 두 체인 간 처음으로 달라지는 시점까지만 표시
+  const chains = matches.map(mi => {
+    const chain = [mi];
+    for (let k = 1; k < N; k++) {
+      const next = (mi + k) % N;
+      if (next === mi) break; // 완전 순환
+      chain.push(next);
+    }
+    return chain;
+  });
+
+  let cutLen; // 보여줄 길이
+  if (matches.length === 1) {
+    // 중복 없음: 이후 같은 시퀀스 다시 나오기 전까지
+    const c = chains[0];
+    let end = c.length;
+    for (let k = 1; k < c.length; k++) {
+      if (sk(SEQS[c[k]]) === raw) { end = k + 1; break; } // 같은 값 재등장 포함해서 끊기
+    }
+    cutLen = end;
+  } else {
+    // 중복 있음: 체인들이 처음으로 달라지는 시점 +1 까지
+    // 매칭 줄 자체(index 0)는 동일하니 index 1부터 비교
+    let divergeAt = 1;
+    const minLen = Math.min(...chains.map(c => c.length));
+    for (let k = 1; k < minLen; k++) {
+      const vals = chains.map(c => sk(SEQS[c[k]]));
+      if (new Set(vals).size > 1) { divergeAt = k; break; }
+      divergeAt = k; // 계속 같으면 마지막 같은 지점
+    }
+    cutLen = divergeAt + 1; // 달라지는 줄까지 포함
+  }
+
+  let html = '';
+
+  if (matches.length === 1) {
+    html += `<div class="result-group"><div class="chain">`;
+    chains[0].slice(0, cutLen).forEach((idx, ci) => {
+      if (ci === 1) html += `<div class="diverge-label">↓ 이후</div>`;
+      html += makeChainRow(idx, ci === 0);
+    });
+    html += `</div></div>`;
+  } else {
+    // 공통 앞부분이 있으면 한 번만 표시
+    // 매칭 줄들 자체는 같은 값이지만 위치가 다르므로 각 그룹으로 표시
+    chains.forEach((chain, gi) => {
+      html += `<div class="result-group">
+        <div class="result-group-label">발견 ${gi+1} — ${chain[0]+1}번째</div>
+        <div class="chain">`;
+      chain.slice(0, cutLen).forEach((idx, ci) => {
+        if (ci === 1) html += `<div class="diverge-label">↓ 이후</div>`;
+        html += makeChainRow(idx, ci === 0);
+      });
+      html += `</div></div>`;
+    });
+  }
+
+  area.innerHTML = html;
+}
+
+render();
+</script>
+
+</body>
+</html>
