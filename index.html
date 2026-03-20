@@ -1,89 +1,290 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>참참참 기믹 트래커</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
-<style>
-* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
-html, body { height: 100dvh; overscroll-behavior: contain; }
-body {
-  background: #0e0e14;
-  color: #c8c0d8;
-  font-family: "DotGothic16", system-ui, -apple-system, monospace;
-  min-height: 100dvh;
-  padding: 36px 16px 60px;
-  display: flex; flex-direction: column; align-items: center;
-}
-.wrapper { width: 100%; max-width: 420px; }
-/* ... 나머지 스타일은 그대로 복사해서 넣으세요 (너무 길어서 생략, 이전 코드에서 그대로) */
-.overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 100; }
-.overlay.on { display: block; }
-.drawer { position: fixed; top:0; right:-310px; bottom:0; width:290px; height:100dvh; background:#11111a; border-left:1px solid #2a2a38; z-index:101; transition:right 0.25s ease; will-change:transform; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:20px 0; }
-.drawer.on { right:0; }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>참참참 기믹 트래커</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+    html, body {
+      height: 100dvh;
+      overscroll-behavior: contain;
+    }
+    body {
+      background: #0e0e14;
+      color: #c8c0d8;
+      font-family: "DotGothic16", system-ui, -apple-system, monospace;
+      min-height: 100dvh;
+      padding: 36px 16px 60px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .wrapper {
+      width: 100%;
+      max-width: 420px;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      margin-bottom: 28px;
+    }
+    .title {
+      font-size: 1.4rem;
+      color: #f0c040;
+      letter-spacing: 0.1em;
+      text-align: center;
+    }
+    .sub {
+      font-size: 0.65rem;
+      color: #4a4560;
+      letter-spacing: 0.2em;
+      margin-top: 4px;
+    }
+    .ham-btn {
+      position: absolute;
+      right: 0;
+      top: 0;
+      background: #16161f;
+      border: 1px solid #2a2a38;
+      border-radius: 7px;
+      padding: 8px 10px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      z-index: 10;
+    }
+    .ham-btn span {
+      display: block;
+      width: 18px;
+      height: 2px;
+      background: #c8c0d8;
+      border-radius: 2px;
+    }
+    .overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 100;
+    }
+    .overlay.on {
+      display: block;
+    }
+    .drawer {
+      position: fixed;
+      top: 0;
+      right: -310px;
+      bottom: 0;
+      width: 290px;
+      height: 100dvh;
+      background: #11111a;
+      border-left: 1px solid #2a2a38;
+      z-index: 101;
+      transition: right 0.25s ease;
+      will-change: transform;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 20px 0;
+    }
+    .drawer.on {
+      right: 0;
+    }
+    .drawer-title {
+      font-size: 0.75rem;
+      color: #4a4560;
+      letter-spacing: 0.18em;
+      padding: 0 18px 12px;
+      border-bottom: 1px solid #2a2a38;
+      margin-bottom: 8px;
+    }
+    .counter {
+      text-align: center;
+      margin-bottom: 16px;
+    }
+    .cnum {
+      font-size: 3rem;
+      line-height: 1;
+      color: #f0c040;
+    }
+    .cof {
+      font-size: 0.68rem;
+      color: #4a4560;
+      letter-spacing: 0.15em;
+      margin-top: 4px;
+    }
+    .seqdis {
+      background: #16161f;
+      border: 1px solid #2a2a38;
+      border-radius: 10px;
+      padding: 16px 18px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      min-height: 64px;
+    }
+    .dbtn {
+      flex: 1;
+      height: 38px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      font-weight: bold;
+    }
+    .d1 {
+      color: #60d0f0;
+      background: rgba(96,208,240,0.12);
+      border: 1px solid rgba(96,208,240,0.25);
+    }
+    .d2 {
+      color: #f07090;
+      background: rgba(240,112,144,0.12);
+      border: 1px solid rgba(240,112,144,0.25);
+    }
+    .ctls {
+      display: flex;
+      gap: 10px;
+    }
+    .cbtn {
+      flex: 1;
+      padding: 13px 8px;
+      border: none;
+      border-radius: 8px;
+      font-family: "DotGothic16", monospace;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+    .cprev {
+      background: #16161f;
+      color: #c8c0d8;
+      border: 1px solid #2a2a38;
+    }
+    .cnext {
+      background: #f0c040;
+      color: #0e0e14;
+      font-weight: bold;
+    }
+    .creset {
+      flex: 0 0 auto;
+      padding: 13px 16px;
+      background: transparent;
+      color: #4a4560;
+      border: 1px solid #2a2a38;
+      border-radius: 8px;
+      font-family: "DotGothic16", monospace;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-<div class="wrapper">
-  <!-- HTML 구조 그대로 (header, overlay, drawer, search-row 등) -->
-  <header>
-    <div>
-      <div class="title">🥚 참참참</div>
-      <div class="sub">TAMAGOTCHI GIMMICK TRACKER</div>
+  <div class="wrapper">
+    <header>
+      <div>
+        <div class="title">🥚 참참참</div>
+        <div class="sub">TAMAGOTCHI GIMMICK TRACKER</div>
+      </div>
+      <button class="ham-btn" id="hamBtn">
+        <span></span><span></span><span></span>
+      </button>
+    </header>
+
+    <div class="overlay" id="overlay"></div>
+    <div class="drawer" id="drawer">
+      <div class="drawer-title">전체 시퀀스 목록</div>
+      <div id="drawerList"></div>
     </div>
-    <button class="ham-btn" id="hamBtn"><span></span><span></span><span></span></button>
-  </header>
-  <!-- ... 나머지 HTML 그대로 -->
-</div>
 
-<script>
-"use strict";  // ← 추가: 에러 더 잘 잡아줌
+    <div class="counter">
+      <div class="cnum" id="cnum">1</div>
+      <div class="cof">/ 18 번째 기믹</div>
+    </div>
+    <div class="seqdis" id="seqdis"></div>
 
-const SEQS = [
-  [2,2,2,1,1],[1,2,1,2,1],[2,2,1,1,2],[1,2,1,2,2],[2,1,1,1,2],
-  [1,2,1,2,2],[1,1,2,1,2],[1,2,2,2,1],[1,1,2,1,2],[1,2,2,1,1],
-  [2,1,2,1,2],[2,2,1,1,1],[2,1,2,1,2],[2,1,1,2,1],[2,1,2,2,2],
-  [1,1,1,2,1],[2,1,2,2,1],[1,2,1,2,1]
-];
-const N = SEQS.length;
-let cur = 0;
+    <div class="ctls">
+      <button class="cbtn cprev" id="prevBtn">◀ 이전</button>
+      <button class="cbtn cnext" id="nextBtn">다음 ▶</button>
+      <button class="creset" id="resetBtn">↺</button>
+    </div>
+  </div>
 
-try {
-  const stored = localStorage.getItem("tg");
-  if (stored !== null) cur = parseInt(stored, 10) % N;
-} catch (e) { cur = 0; }
+  <script>
+    const SEQS = [
+      [2,2,2,1,1], [1,2,1,2,1], [2,2,1,1,2], [1,2,1,2,2], [2,1,1,1,2],
+      [1,2,1,2,2], [1,1,2,1,2], [1,2,2,2,1], [1,1,2,1,2], [1,2,2,1,1],
+      [2,1,2,1,2], [2,2,1,1,1], [2,1,2,1,2], [2,1,1,2,1], [2,1,2,2,2],
+      [1,1,1,2,1], [2,1,2,2,1], [1,2,1,2,1]
+    ];
+    const N = SEQS.length;
+    let cur = 0;
 
-function save() {
-  try { localStorage.setItem("tg", String(cur)); } catch (e) {}
-}
+    try {
+      const stored = localStorage.getItem("tg");
+      if (stored !== null) {
+        cur = parseInt(stored, 10) % N;
+        if (isNaN(cur)) cur = 0;
+      }
+    } catch (e) {
+      cur = 0;
+    }
 
-function sk(s) { return s.join(""); }
+    function save() {
+      try {
+        localStorage.setItem("tg", String(cur));
+      } catch (e) {}
+    }
 
-function chipHTML(d, big) {
-  const cls = big ? ("cchip cc" + d) : ("chip c" + d);
-  return `<div class="${cls}">${d}</div>`;
-}
+    function render() {
+      document.getElementById("cnum").textContent = cur + 1;
 
-function render() {
-  document.getElementById("cnum").textContent = String(cur + 1);
-  let h = "";
-  for (let i = 0; i < SEQS[cur].length; i++) {
-    h += `<div class="dbtn d${SEQS[cur][i]}">${SEQS[cur][i]}</div>`;
-  }
-  document.getElementById("seqdis").innerHTML = h;
-  // ... 나머지 render 로직 그대로 (className 업데이트 등)
-}
+      let h = "";
+      SEQS[cur].forEach(v => {
+        h += `<div class="dbtn d${v}">${v}</div>`;
+      });
+      document.getElementById("seqdis").innerHTML = h;
+    }
 
-// buildDrawer, openDrawer, closeDrawer, 이벤트 리스너 등도 template literal(` `)로 바꿔서 에러 방지
-// 예: h += `<div class="drow${i === cur ? " cur" : ""}" data-i="${i}"> ... `
+    // 햄버거 버튼 (drawer 열기/닫기) - 지금은 간단히만
+    document.getElementById("hamBtn").addEventListener("click", () => {
+      alert("전체 목록은 준비 중이에요~");
+    });
 
-// 전체 JS에서 " " 만 사용하고, ' ' 도 피하거나 일관되게
-// render(); ← 마지막에 호출 필수
+    document.getElementById("prevBtn").addEventListener("click", () => {
+      cur = (cur - 1 + N) % N;
+      save();
+      render();
+    });
 
-render();  // 페이지 로드 시 즉시 렌더링
-</script>
+    document.getElementById("nextBtn").addEventListener("click", () => {
+      cur = (cur + 1) % N;
+      save();
+      render();
+    });
+
+    document.getElementById("resetBtn").addEventListener("click", () => {
+      cur = 0;
+      save();
+      render();
+    });
+
+    // 페이지 로드되자마자 보이게!
+    render();
+  </script>
 </body>
 </html>
