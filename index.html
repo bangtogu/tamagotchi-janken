@@ -5,13 +5,21 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>참참참 기믹 트래커</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
 body {
   background: #0e0e14;
   color: #c8c0d8;
-  font-family: 'DotGothic16', monospace;
+  font-family: "DotGothic16", monospace;
   min-height: 100vh;
   padding: 36px 16px 60px;
   display: flex;
@@ -34,28 +42,37 @@ margin-bottom: 28px;
 position: absolute; right: 0; top: 0;
 background: #16161f; border: 1px solid #2a2a38;
 border-radius: 7px; padding: 8px 10px;
-cursor: pointer; display: flex; flex-direction: column; gap: 4px;
+cursor: pointer;
+display: flex; flex-direction: column; gap: 4px;
+z-index: 10;
 }
 .ham-btn span { display: block; width: 18px; height: 2px; background: #c8c0d8; border-radius: 2px; }
 
 .overlay {
-display: none; position: fixed; top:0;left:0;right:0;bottom:0;
+display: none; position: fixed; top:0; left:0; right:0; bottom:0;
 background: rgba(0,0,0,0.6); z-index: 100;
 }
 .overlay.on { display: block; }
 .drawer {
 position: fixed; top:0; right:-310px; bottom:0; width:290px;
 background: #11111a; border-left: 1px solid #2a2a38;
-z-index: 101; transition: right 0.25s; overflow-y: auto;
+z-index: 101;
+-webkit-transition: right 0.25s ease;
+transition: right 0.25s ease;
+overflow-y: auto;
+-webkit-overflow-scrolling: touch;
 padding: 20px 0;
 }
 .drawer.on { right: 0; }
-.drawer-title { font-size: 0.75rem; color: #4a4560; letter-spacing: 0.18em; padding: 0 18px 12px; border-bottom: 1px solid #2a2a38; margin-bottom: 8px; }
+.drawer-title {
+font-size: 0.75rem; color: #4a4560; letter-spacing: 0.18em;
+padding: 0 18px 12px; border-bottom: 1px solid #2a2a38; margin-bottom: 8px;
+}
 .drow {
 display: flex; align-items: center; gap: 8px;
-padding: 7px 14px; cursor: pointer;
+padding: 10px 14px; cursor: pointer;
+position: relative; z-index: 1;
 }
-.drow:active { background: #1c1c28; }
 .drow.cur { background: rgba(240,192,64,0.1); }
 .drow-num { font-size: 0.65rem; color: #4a4560; min-width: 20px; }
 .drow.cur .drow-num { color: #f0c040; }
@@ -74,15 +91,18 @@ font-size: 0.72rem; font-weight: bold;
 .sinput {
 flex: 1; background: #16161f; border: 1px solid #2a2a38;
 border-radius: 8px; padding: 11px 14px;
-font-family: ‘DotGothic16’, monospace; font-size: 1rem;
+font-family: “DotGothic16”, monospace; font-size: 1rem;
 color: #c8c0d8; letter-spacing: 0.18em; outline: none;
+-webkit-appearance: none; appearance: none;
 }
 .sinput:focus { border-color: #f0c040; }
 .sinput.err { border-color: #f07090; }
 .sbtn {
 padding: 11px 16px; background: #f0c040; color: #0e0e14;
 border: none; border-radius: 8px;
-font-family: ‘DotGothic16’, monospace; font-size: 0.8rem; cursor: pointer;
+font-family: “DotGothic16”, monospace; font-size: 0.8rem;
+cursor: pointer; position: relative; z-index: 1;
+-webkit-appearance: none; appearance: none;
 }
 .shint { font-size: 0.62rem; color: #4a4560; letter-spacing: 0.1em; margin-bottom: 14px; min-height: 16px; }
 .shint.ok { color: #f0c040; }
@@ -94,10 +114,10 @@ font-family: ‘DotGothic16’, monospace; font-size: 0.8rem; cursor: pointer;
 .rchain { display: flex; flex-direction: column; gap: 3px; }
 .crow {
 display: flex; align-items: center; gap: 8px;
-padding: 7px 10px; border-radius: 7px;
-background: #16161f; border: 1px solid #2a2a38; cursor: pointer;
+padding: 8px 10px; border-radius: 7px;
+background: #16161f; border: 1px solid #2a2a38;
+cursor: pointer; position: relative; z-index: 1;
 }
-.crow:active { background: #1c1c28; }
 .crow.match { border-color: rgba(240,192,64,0.4); background: rgba(240,192,64,0.05); }
 .crow.cur { border-color: #f0c040; background: rgba(240,192,64,0.1); }
 .crow-num { font-size: 0.65rem; color: #4a4560; min-width: 20px; }
@@ -124,7 +144,7 @@ display: flex; align-items: center; justify-content: space-between; gap: 8px;
 min-height: 64px; position: relative;
 }
 .seqdis::before {
-content: ‘’; position: absolute; left:0;top:0;bottom:0;
+content: “”; position: absolute; left:0; top:0; bottom:0;
 width: 3px; background: #f0c040; border-radius: 2px 0 0 2px;
 }
 .dbtn {
@@ -138,7 +158,9 @@ font-size: 1rem; font-weight: bold;
 .ctls { display: flex; gap: 10px; }
 .cbtn {
 flex: 1; padding: 13px 8px; border: none; border-radius: 8px;
-font-family: ‘DotGothic16’, monospace; font-size: 0.85rem; cursor: pointer;
+font-family: “DotGothic16”, monospace; font-size: 0.85rem;
+cursor: pointer; position: relative; z-index: 1;
+-webkit-appearance: none; appearance: none;
 }
 .cbtn:active { opacity: 0.7; }
 .cprev { background: #16161f; color: #c8c0d8; border: 1px solid #2a2a38; }
@@ -147,7 +169,9 @@ font-family: ‘DotGothic16’, monospace; font-size: 0.85rem; cursor: pointer;
 flex: 0 0 auto; padding: 13px 16px;
 background: transparent; color: #4a4560;
 border: 1px solid #2a2a38; border-radius: 8px;
-font-family: ‘DotGothic16’, monospace; font-size: 0.85rem; cursor: pointer;
+font-family: “DotGothic16”, monospace; font-size: 0.85rem;
+cursor: pointer; position: relative; z-index: 1;
+-webkit-appearance: none; appearance: none;
 }
 </style>
 
@@ -157,7 +181,7 @@ font-family: ‘DotGothic16’, monospace; font-size: 0.85rem; cursor: pointer;
 
 <header>
   <div>
-    <div class="title">🥚 참참참</div>
+    <div class="title">&#x1F95A; &#xCC38;&#xCC38;&#xCC38;</div>
     <div class="sub">TAMAGOTCHI GIMMICK TRACKER</div>
   </div>
   <button class="ham-btn" id="hamBtn">
@@ -167,27 +191,27 @@ font-family: ‘DotGothic16’, monospace; font-size: 0.85rem; cursor: pointer;
 
 <div class="overlay" id="overlay"></div>
 <div class="drawer" id="drawer">
-  <div class="drawer-title">전체 시퀀스 목록</div>
+  <div class="drawer-title">&#xC804;&#xCCB4; &#xC2DC;&#xCFFC;&#xC2A4; &#xBAA9;&#xB85D;</div>
   <div id="drawerList"></div>
 </div>
 
 <div class="search-row">
-  <input class="sinput" id="sinput" type="text" maxlength="5" placeholder="12121">
-  <button class="sbtn" id="sbtn">찾기</button>
+  <input class="sinput" id="sinput" type="text" inputmode="numeric" maxlength="5" placeholder="12121">
+  <button class="sbtn" id="sbtn">&#xCC3E;&#xAE30;</button>
 </div>
-<div class="shint" id="shint">숫자 5자리 입력 후 찾기</div>
+<div class="shint" id="shint">&#xC22B;&#xC790; 5&#xC790;&#xB9AC; &#xC785;&#xB825; &#xD6C4; &#xCC3E;&#xAE30;</div>
 <div class="rarea" id="rarea"></div>
 
 <div class="counter">
   <div class="cnum" id="cnum">1</div>
-  <div class="cof">/ 18 번째 기믹</div>
+  <div class="cof">/ 18 &#xBC88;&#xC9F8; &#xAE30;&#xBBF9;</div>
 </div>
 <div class="seqdis" id="seqdis"></div>
 
 <div class="ctls">
-  <button class="cbtn cprev" id="prevBtn">◀ 이전</button>
-  <button class="cbtn cnext" id="nextBtn">다음 ▶</button>
-  <button class="creset" id="resetBtn">↺</button>
+  <button class="cbtn cprev" id="prevBtn">&#x25C4; &#xC774;&#xC804;</button>
+  <button class="cbtn cnext" id="nextBtn">&#xB2E4;&#xC74C; &#x25BA;</button>
+  <button class="creset" id="resetBtn">&#x21BA;</button>
 </div>
 
 </div>
@@ -201,136 +225,149 @@ var SEQS = [
 var N = SEQS.length;
 var cur = 0;
 
-try { cur = parseInt(localStorage.getItem(‘tg’) || ‘0’, 10) % N; } catch(e){}
+try {
+var stored = localStorage.getItem(“tg”);
+if (stored !== null) cur = parseInt(stored, 10) % N;
+} catch(e) { cur = 0; }
 
-function save() { try { localStorage.setItem(‘tg’, String(cur)); } catch(e){} }
+function save() {
+try { localStorage.setItem(“tg”, String(cur)); } catch(e) {}
+}
 
-function sk(s) { return s.join(’’); }
+function sk(s) { return s.join(””); }
 
-function chipH(d, big) {
-var cls = big ? (‘cchip cc’ + d) : (‘chip c’ + d);
-return ‘<div class="' + cls + '">’ + d + ‘</div>’;
+function chipHTML(d, big) {
+var cls = big ? (“cchip cc” + d) : (“chip c” + d);
+return “<div class="” + cls + “">” + d + “</div>”;
 }
 
 function render() {
-document.getElementById(‘cnum’).textContent = String(cur + 1);
-var h = ‘’;
-for (var i = 0; i < SEQS[cur].length; i++) h += ‘<div class="dbtn d' + SEQS[cur][i] + '">’ + SEQS[cur][i] + ‘</div>’;
-document.getElementById(‘seqdis’).innerHTML = h;
-var rows = document.querySelectorAll(’.crow’);
-for (var i = 0; i < rows.length; i++) {
-var idx = parseInt(rows[i].getAttribute(‘data-i’));
-if (idx === cur) rows[i].className = rows[i].className.replace(’ cur’,’’) + ’ cur’;
-else rows[i].className = rows[i].className.replace(’ cur’,’’);
+document.getElementById(“cnum”).textContent = String(cur + 1);
+var h = “”;
+for (var i = 0; i < SEQS[cur].length; i++) {
+h += “<div class="dbtn d” + SEQS[cur][i] + “">” + SEQS[cur][i] + “</div>”;
 }
-var drows = document.querySelectorAll(’.drow’);
+document.getElementById(“seqdis”).innerHTML = h;
+
+var rows = document.querySelectorAll(”.crow”);
+for (var i = 0; i < rows.length; i++) {
+var idx = parseInt(rows[i].getAttribute(“data-i”), 10);
+var base = rows[i].getAttribute(“data-match”) === “1” ? “crow match” : “crow”;
+rows[i].className = idx === cur ? base + “ cur” : base;
+}
+var drows = document.querySelectorAll(”.drow”);
 for (var i = 0; i < drows.length; i++) {
-if (i === cur) drows[i].className = ‘drow cur’;
-else drows[i].className = ‘drow’;
-var lbl = drows[i].querySelector(’.drow-cur-label’);
-if (lbl) lbl.style.display = i === cur ? ‘’ : ‘none’;
+drows[i].className = i === cur ? “drow cur” : “drow”;
+var lbl = drows[i].querySelector(”.drow-cur-label”);
+if (lbl) lbl.style.display = i === cur ? “” : “none”;
 }
 }
 
 function buildDrawer() {
-var h = ‘’;
+var h = “”;
 for (var i = 0; i < N; i++) {
-var chips = ‘’;
-for (var j = 0; j < SEQS[i].length; j++) chips += chipH(SEQS[i][j], false);
-h += ‘<div class="drow' + (i===cur?' cur':'') + '" data-i="' + i + '">’
-+ ‘<span class="drow-num">’ + (i+1) + ‘</span>’
-+ ‘<div class="drow-chips">’ + chips + ‘</div>’
-+ ‘<span class=“drow-cur-label”’ + (i!==cur?’ style=“display:none”’:’’) + ‘>◀ 현재</span>’
-+ ‘</div>’;
+var chips = “”;
+for (var j = 0; j < SEQS[i].length; j++) chips += chipHTML(SEQS[i][j], false);
+h += “<div class="drow” + (i === cur ? “ cur” : “”) + “" data-i="” + i + “">”
++ “<span class="drow-num">” + (i + 1) + “</span>”
++ “<div class="drow-chips">” + chips + “</div>”
++ “<span class="drow-cur-label"” + (i !== cur ? “ style="display:none"” : “”) + “>\u25c4 \ud604\uc7ac</span>”
++ “</div>”;
 }
-document.getElementById(‘drawerList’).innerHTML = h;
-var drows = document.querySelectorAll(’.drow’);
+document.getElementById(“drawerList”).innerHTML = h;
+var drows = document.querySelectorAll(”.drow”);
 for (var i = 0; i < drows.length; i++) {
 (function(idx) {
-drows[idx].addEventListener(‘click’, function() { cur=idx; save(); render(); closeDrawer(); });
+drows[idx].addEventListener(“click”, function() {
+cur = idx; save(); render(); closeDrawer();
+});
 })(i);
 }
 }
 
 function openDrawer() {
 buildDrawer();
-document.getElementById(‘drawer’).className = ‘drawer on’;
-document.getElementById(‘overlay’).className = ‘overlay on’;
+document.getElementById(“drawer”).className = “drawer on”;
+document.getElementById(“overlay”).className = “overlay on”;
 }
 function closeDrawer() {
-document.getElementById(‘drawer’).className = ‘drawer’;
-document.getElementById(‘overlay’).className = ‘overlay’;
+document.getElementById(“drawer”).className = “drawer”;
+document.getElementById(“overlay”).className = “overlay”;
 }
 
-document.getElementById(‘hamBtn’).addEventListener(‘click’, function() {
-if (document.getElementById(‘drawer’).className.indexOf(‘on’) > -1) closeDrawer();
+document.getElementById(“hamBtn”).addEventListener(“click”, function() {
+if (document.getElementById(“drawer”).className.indexOf(“on”) > -1) closeDrawer();
 else openDrawer();
 });
-document.getElementById(‘overlay’).addEventListener(‘click’, closeDrawer);
+document.getElementById(“overlay”).addEventListener(“click”, closeDrawer);
 
-document.getElementById(‘prevBtn’).addEventListener(‘click’, function() {
+document.getElementById(“prevBtn”).addEventListener(“click”, function() {
 cur = (cur - 1 + N) % N; save(); render();
 });
-document.getElementById(‘nextBtn’).addEventListener(‘click’, function() {
+document.getElementById(“nextBtn”).addEventListener(“click”, function() {
 cur = (cur + 1) % N; save(); render();
 });
-document.getElementById(‘resetBtn’).addEventListener(‘click’, function() {
+document.getElementById(“resetBtn”).addEventListener(“click”, function() {
 cur = 0; save();
-document.getElementById(‘rarea’).innerHTML = ‘’;
-document.getElementById(‘shint’).textContent = ‘숫자 5자리 입력 후 찾기’;
-document.getElementById(‘shint’).className = ‘shint’;
-document.getElementById(‘sinput’).value = ‘’;
-document.getElementById(‘sinput’).className = ‘sinput’;
+document.getElementById(“rarea”).innerHTML = “”;
+document.getElementById(“shint”).textContent = “\uc22b\uc790 5\uc790\ub9ac \uc785\ub825 \ud6c4 \ucc3e\uae30”;
+document.getElementById(“shint”).className = “shint”;
+document.getElementById(“sinput”).value = “”;
+document.getElementById(“sinput”).className = “sinput”;
 render();
 });
 
-document.getElementById(‘sinput’).addEventListener(‘input’, function() {
-this.value = this.value.replace(/[^12]/g, ‘’);
-this.className = ‘sinput’;
-document.getElementById(‘shint’).textContent = ‘숫자 5자리 입력 후 찾기’;
-document.getElementById(‘shint’).className = ‘shint’;
+document.getElementById(“sinput”).addEventListener(“input”, function() {
+this.value = this.value.replace(/[^12]/g, “”);
+this.className = “sinput”;
+document.getElementById(“shint”).textContent = “\uc22b\uc790 5\uc790\ub9ac \uc785\ub825 \ud6c4 \ucc3e\uae30”;
+document.getElementById(“shint”).className = “shint”;
 });
-document.getElementById(‘sinput’).addEventListener(‘keydown’, function(e) {
-if (e.key === ‘Enter’) doSearch();
+document.getElementById(“sinput”).addEventListener(“keydown”, function(e) {
+if (e.key === “Enter”) doSearch();
 });
-document.getElementById(‘sbtn’).addEventListener(‘click’, doSearch);
+document.getElementById(“sbtn”).addEventListener(“click”, doSearch);
 
 function makeCrow(idx, isMatch) {
-var cls = ‘crow’ + (isMatch?’ match’:’’) + (idx===cur?’ cur’:’’);
-var chips = ‘’;
-for (var j = 0; j < SEQS[idx].length; j++) chips += chipH(SEQS[idx][j], true);
-return ‘<div class="' + cls + '" data-i="' + idx + '">’
-+ ‘<span class="crow-num">’ + (idx+1) + ‘</span>’
-+ ‘<div class="crow-chips">’ + chips + ‘</div>’
-+ ‘</div>’;
+var cls = “crow” + (isMatch ? “ match” : “”) + (idx === cur ? “ cur” : “”);
+var chips = “”;
+for (var j = 0; j < SEQS[idx].length; j++) chips += chipHTML(SEQS[idx][j], true);
+return “<div class="” + cls + “" data-i="” + idx + “" data-match="” + (isMatch ? “1” : “0”) + “">”
++ “<span class="crow-num">” + (idx + 1) + “</span>”
++ “<div class="crow-chips">” + chips + “</div>”
++ “</div>”;
 }
 
 function doSearch() {
-var raw = document.getElementById(‘sinput’).value.trim();
-var hint = document.getElementById(‘shint’);
-var area = document.getElementById(‘rarea’);
+var raw = document.getElementById(“sinput”).value.trim();
+var hint = document.getElementById(“shint”);
+var area = document.getElementById(“rarea”);
+
 if (raw.length !== 5) {
-document.getElementById(‘sinput’).className = ‘sinput err’;
-hint.textContent = ‘5자리 입력해줘 (예: 12121)’;
-hint.className = ‘shint no’;
-area.innerHTML = ‘’; return;
+document.getElementById(“sinput”).className = “sinput err”;
+hint.textContent = “5\uc790\ub9ac \uc785\ub825\ud574\uc918 (\uc608: 12121)”;
+hint.className = “shint no”;
+area.innerHTML = “”; return;
 }
-var q = raw.split(’’).map(Number);
+
+var q = raw.split(””).map(Number);
 var matches = [];
 for (var i = 0; i < N; i++) {
 var ok = true;
-for (var j = 0; j < 5; j++) if (SEQS[i][j] !== q[j]) { ok=false; break; }
+for (var j = 0; j < 5; j++) if (SEQS[i][j] !== q[j]) { ok = false; break; }
 if (ok) matches.push(i);
 }
+
 if (!matches.length) {
-document.getElementById(‘sinput’).className = ‘sinput err’;
-hint.textContent = ‘일치하는 시퀀스 없음’;
-hint.className = ‘shint no’;
-area.innerHTML = ‘’; return;
+document.getElementById(“sinput”).className = “sinput err”;
+hint.textContent = “\uc77c\uce58\ud558\ub294 \uc2dc\ucffc\uc2a4 \uc5c6\uc74c”;
+hint.className = “shint no”;
+area.innerHTML = “”; return;
 }
-document.getElementById(‘sinput’).className = ‘sinput’;
-hint.textContent = matches.length > 1 ? (matches.length + ‘곳 발견’) : ‘1곳 발견’;
-hint.className = ‘shint ok’;
+
+document.getElementById(“sinput”).className = “sinput”;
+hint.textContent = matches.length > 1 ? (matches.length + “\uacf3 \ubc1c\uacac”) : “1\uacf3 \ubc1c\uacac”;
+hint.className = “shint ok”;
 
 var chains = [];
 for (var m = 0; m < matches.length; m++) {
@@ -357,31 +394,35 @@ var divergeAt = 1;
 for (var k = 1; k < minLen; k++) {
 var v0 = sk(SEQS[chains[0][k]]);
 var same = true;
-for (var m = 1; m < chains.length; m++) if (sk(SEQS[chains[m][k]]) !== v0) { same=false; break; }
+for (var m = 1; m < chains.length; m++) {
+if (sk(SEQS[chains[m][k]]) !== v0) { same = false; break; }
+}
 divergeAt = k;
 if (!same) break;
 }
 cutLen = divergeAt + 1;
 }
 
-var h = ‘’;
+var h = “”;
 for (var gi = 0; gi < chains.length; gi++) {
-var label = matches.length > 1 ? (’발견 ’ + (gi+1) + ’ — ’ + (chains[gi][0]+1) + ‘번째’) : ((chains[gi][0]+1) + ‘번째’);
-h += ‘<div class="rgroup"><div class="rlabel">’ + label + ‘</div><div class="rchain">’;
+var label = matches.length > 1
+? (”\ubc1c\uacac “ + (gi + 1) + “ \u2014 “ + (chains[gi][0] + 1) + “\ubc88\uc9f8”)
+: ((chains[gi][0] + 1) + “\ubc88\uc9f8”);
+h += “<div class="rgroup"><div class="rlabel">” + label + “</div><div class="rchain">”;
 var slice = chains[gi].slice(0, cutLen);
 for (var ci = 0; ci < slice.length; ci++) {
-if (ci === 1) h += ‘<div class="rdiv">↓ 이후</div>’;
+if (ci === 1) h += “<div class="rdiv">\u2193 \uc774\ud6c4</div>”;
 h += makeCrow(slice[ci], ci === 0);
 }
-h += ‘</div></div>’;
+h += “</div></div>”;
 }
 area.innerHTML = h;
 
-var crows = area.querySelectorAll(’.crow’);
+var crows = area.querySelectorAll(”.crow”);
 for (var i = 0; i < crows.length; i++) {
 (function(el, idx) {
-el.addEventListener(‘click’, function() { cur=idx; save(); render(); });
-})(crows[i], parseInt(crows[i].getAttribute(‘data-i’)));
+el.addEventListener(“click”, function() { cur = idx; save(); render(); });
+})(crows[i], parseInt(crows[i].getAttribute(“data-i”), 10));
 }
 }
 
