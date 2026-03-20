@@ -5,389 +5,149 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>참참참 기믹 트래커</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
+* { box-sizing: border-box; margin: 0; padding: 0; }
 body {
-background-color: #0e0e14;
-color: #c8c0d8;
-font-family: ‘DotGothic16’, ‘Courier New’, monospace;
-min-height: 100vh;
-display: -webkit-flex;
-display: flex;
--webkit-flex-direction: column;
-flex-direction: column;
--webkit-align-items: center;
-align-items: center;
-padding: 36px 16px 60px;
+  background: #0e0e14;
+  color: #c8c0d8;
+  font-family: 'DotGothic16', monospace;
+  min-height: 100vh;
+  padding: 36px 16px 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
+.wrapper { width: 100%; max-width: 420px; }
 
-.wrapper {
-width: 100%;
-max-width: 420px;
-}
-
-/* header */
 header {
-display: -webkit-flex;
 display: flex;
--webkit-align-items: center;
 align-items: center;
--webkit-justify-content: center;
 justify-content: center;
 position: relative;
 margin-bottom: 28px;
 }
-.header-inner {
-display: -webkit-flex;
-display: flex;
--webkit-flex-direction: column;
-flex-direction: column;
--webkit-align-items: center;
-align-items: center;
-}
-.title {
-font-family: ‘DotGothic16’, ‘Courier New’, monospace;
-font-size: 1.4rem;
-color: #f0c040;
-letter-spacing: 0.1em;
-text-shadow: 0 0 12px rgba(240,192,64,0.4);
-}
-.sub {
-font-size: 0.65rem;
-color: #4a4560;
-letter-spacing: 0.22em;
-margin-top: 5px;
-}
+.title { font-size: 1.4rem; color: #f0c040; letter-spacing: 0.1em; text-align: center; }
+.sub { font-size: 0.65rem; color: #4a4560; letter-spacing: 0.2em; margin-top: 4px; }
 
-/* hamburger */
-.hamburger {
-position: absolute;
-right: 0; top: 0;
-background-color: #16161f;
-border: 1px solid #2a2a38;
-border-radius: 7px;
-padding: 8px 10px;
-cursor: pointer;
-display: -webkit-flex;
-display: flex;
--webkit-flex-direction: column;
-flex-direction: column;
-gap: 4px;
+.ham-btn {
+position: absolute; right: 0; top: 0;
+background: #16161f; border: 1px solid #2a2a38;
+border-radius: 7px; padding: 8px 10px;
+cursor: pointer; display: flex; flex-direction: column; gap: 4px;
 }
-.hamburger span {
-display: block;
-width: 18px; height: 2px;
-background-color: #c8c0d8;
-border-radius: 2px;
-}
-.hamburger.open span { background-color: #f0c040; }
+.ham-btn span { display: block; width: 18px; height: 2px; background: #c8c0d8; border-radius: 2px; }
 
-/* drawer */
-.drawer-overlay {
-display: none;
-position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-background-color: rgba(0,0,0,0.55);
-z-index: 100;
+.overlay {
+display: none; position: fixed; top:0;left:0;right:0;bottom:0;
+background: rgba(0,0,0,0.6); z-index: 100;
 }
-.drawer-overlay.show { display: block; }
+.overlay.on { display: block; }
 .drawer {
-position: fixed; top: 0; right: -320px; bottom: 0;
-width: 300px;
-background-color: #11111a;
-border-left: 1px solid #2a2a38;
-z-index: 101;
--webkit-transition: right 0.25s ease;
-transition: right 0.25s ease;
-display: -webkit-flex;
-display: flex;
--webkit-flex-direction: column;
-flex-direction: column;
-padding: 24px 0;
-overflow: hidden;
+position: fixed; top:0; right:-310px; bottom:0; width:290px;
+background: #11111a; border-left: 1px solid #2a2a38;
+z-index: 101; transition: right 0.25s; overflow-y: auto;
+padding: 20px 0;
 }
-.drawer.open { right: 0; }
-.drawer-title {
-font-family: ‘DotGothic16’, monospace;
-font-size: 0.8rem;
-color: #4a4560;
-letter-spacing: 0.18em;
-padding: 0 20px 14px;
-border-bottom: 1px solid #2a2a38;
+.drawer.on { right: 0; }
+.drawer-title { font-size: 0.75rem; color: #4a4560; letter-spacing: 0.18em; padding: 0 18px 12px; border-bottom: 1px solid #2a2a38; margin-bottom: 8px; }
+.drow {
+display: flex; align-items: center; gap: 8px;
+padding: 7px 14px; cursor: pointer;
 }
-.drawer-list {
-overflow-y: auto;
--webkit-overflow-scrolling: touch;
-flex: 1;
-padding: 10px 12px;
-}
-.drawer-row {
-display: -webkit-flex;
-display: flex;
--webkit-align-items: center;
-align-items: center;
-gap: 8px;
-padding: 7px 8px;
-border-radius: 6px;
-cursor: pointer;
-margin-bottom: 2px;
-}
-.drawer-row.is-current { background-color: rgba(240,192,64,0.1); }
-.drawer-num {
-font-family: ‘DotGothic16’, monospace;
-font-size: 0.65rem;
-color: #4a4560;
-min-width: 20px;
-}
-.drawer-row.is-current .drawer-num { color: #f0c040; }
-.drawer-seq {
-display: -webkit-flex;
-display: flex;
-gap: 3px;
-}
-.cur-arrow {
-font-family: ‘DotGothic16’, monospace;
-font-size: 0.65rem;
-color: #f0c040;
-margin-left: auto;
-}
+.drow:active { background: #1c1c28; }
+.drow.cur { background: rgba(240,192,64,0.1); }
+.drow-num { font-size: 0.65rem; color: #4a4560; min-width: 20px; }
+.drow.cur .drow-num { color: #f0c040; }
+.drow-chips { display: flex; gap: 3px; }
+.drow-cur-label { font-size: 0.62rem; color: #f0c040; margin-left: auto; }
 
-/* chip */
 .chip {
-width: 22px; height: 22px;
-border-radius: 4px;
-display: -webkit-flex;
-display: flex;
--webkit-align-items: center;
-align-items: center;
--webkit-justify-content: center;
-justify-content: center;
-font-family: ‘DotGothic16’, monospace;
-font-size: 0.72rem;
-font-weight: bold;
+width: 22px; height: 22px; border-radius: 4px;
+display: flex; align-items: center; justify-content: center;
+font-size: 0.72rem; font-weight: bold;
 }
-.c1 { color: #60d0f0; background-color: rgba(96,208,240,0.1); border: 1px solid rgba(96,208,240,0.2); }
-.c2 { color: #f07090; background-color: rgba(240,112,144,0.1); border: 1px solid rgba(240,112,144,0.2); }
+.c1 { color: #60d0f0; background: rgba(96,208,240,0.12); border: 1px solid rgba(96,208,240,0.25); }
+.c2 { color: #f07090; background: rgba(240,112,144,0.12); border: 1px solid rgba(240,112,144,0.25); }
 
-/* search */
-.search-wrap {
-display: -webkit-flex;
-display: flex;
-gap: 8px;
-margin-bottom: 8px;
+.search-row { display: flex; gap: 8px; margin-bottom: 8px; }
+.sinput {
+flex: 1; background: #16161f; border: 1px solid #2a2a38;
+border-radius: 8px; padding: 11px 14px;
+font-family: ‘DotGothic16’, monospace; font-size: 1rem;
+color: #c8c0d8; letter-spacing: 0.18em; outline: none;
 }
-.search-input {
--webkit-flex: 1;
-flex: 1;
-background-color: #16161f;
-border: 1px solid #2a2a38;
-border-radius: 8px;
-padding: 11px 14px;
-font-family: ‘DotGothic16’, monospace;
-font-size: 1rem;
-color: #c8c0d8;
-letter-spacing: 0.18em;
-outline: none;
--webkit-appearance: none;
-appearance: none;
+.sinput:focus { border-color: #f0c040; }
+.sinput.err { border-color: #f07090; }
+.sbtn {
+padding: 11px 16px; background: #f0c040; color: #0e0e14;
+border: none; border-radius: 8px;
+font-family: ‘DotGothic16’, monospace; font-size: 0.8rem; cursor: pointer;
 }
-.search-input:focus { border-color: #f0c040; }
-.search-input.error { border-color: #f07090; }
-.btn-search {
-padding: 11px 16px;
-background-color: #f0c040;
-color: #0e0e14;
-border: none;
-border-radius: 8px;
-font-family: ‘DotGothic16’, monospace;
-font-size: 0.8rem;
-cursor: pointer;
--webkit-appearance: none;
-appearance: none;
-}
-.search-hint {
-font-size: 0.62rem;
-color: #4a4560;
-letter-spacing: 0.1em;
-margin-bottom: 14px;
-min-height: 16px;
-}
-.search-hint.found { color: #f0c040; }
-.search-hint.notfound { color: #f07090; }
+.shint { font-size: 0.62rem; color: #4a4560; letter-spacing: 0.1em; margin-bottom: 14px; min-height: 16px; }
+.shint.ok { color: #f0c040; }
+.shint.no { color: #f07090; }
 
-/* result chain */
-.result-area { margin-bottom: 24px; }
-.result-group { margin-bottom: 16px; }
-.result-group-label {
-font-family: ‘DotGothic16’, monospace;
-font-size: 0.6rem;
-color: #4a4560;
-letter-spacing: 0.14em;
-margin-bottom: 6px;
+.rarea { margin-bottom: 20px; }
+.rgroup { margin-bottom: 14px; }
+.rlabel { font-size: 0.6rem; color: #4a4560; letter-spacing: 0.12em; margin-bottom: 6px; }
+.rchain { display: flex; flex-direction: column; gap: 3px; }
+.crow {
+display: flex; align-items: center; gap: 8px;
+padding: 7px 10px; border-radius: 7px;
+background: #16161f; border: 1px solid #2a2a38; cursor: pointer;
 }
-.chain {
-display: -webkit-flex;
-display: flex;
--webkit-flex-direction: column;
-flex-direction: column;
-gap: 3px;
+.crow:active { background: #1c1c28; }
+.crow.match { border-color: rgba(240,192,64,0.4); background: rgba(240,192,64,0.05); }
+.crow.cur { border-color: #f0c040; background: rgba(240,192,64,0.1); }
+.crow-num { font-size: 0.65rem; color: #4a4560; min-width: 20px; }
+.crow.match .crow-num { color: #f0c040; }
+.crow.cur .crow-num { color: #f0c040; }
+.crow-chips { display: flex; gap: 3px; }
+.cchip {
+width: 24px; height: 24px; border-radius: 4px;
+display: flex; align-items: center; justify-content: center;
+font-size: 0.78rem; font-weight: bold;
 }
-.chain-row {
-display: -webkit-flex;
-display: flex;
--webkit-align-items: center;
-align-items: center;
-gap: 8px;
-padding: 7px 10px;
-border-radius: 7px;
-background-color: #16161f;
-border: 1px solid #2a2a38;
-cursor: pointer;
-position: relative;
-}
-.chain-row.is-match { border-color: rgba(240,192,64,0.45); background-color: rgba(240,192,64,0.05); }
-.chain-row.is-current { border-color: #f0c040; background-color: rgba(240,192,64,0.11); }
-.chain-num {
-font-family: ‘DotGothic16’, monospace;
-font-size: 0.68rem;
-color: #4a4560;
-min-width: 20px;
-}
-.chain-row.is-match .chain-num { color: #f0c040; }
-.chain-row.is-current .chain-num { color: #f0c040; }
-.chain-seq {
-display: -webkit-flex;
-display: flex;
-gap: 3px;
-}
-.chain-chip {
-width: 24px; height: 24px;
-border-radius: 4px;
-display: -webkit-flex;
-display: flex;
--webkit-align-items: center;
-align-items: center;
--webkit-justify-content: center;
-justify-content: center;
-font-family: ‘DotGothic16’, monospace;
-font-size: 0.78rem;
-font-weight: bold;
-}
-.chain-chip.cc1 { color: #60d0f0; background-color: rgba(96,208,240,0.1); border: 1px solid rgba(96,208,240,0.2); }
-.chain-chip.cc2 { color: #f07090; background-color: rgba(240,112,144,0.1); border: 1px solid rgba(240,112,144,0.2); }
-.chain-row.is-match .chain-chip.cc1 { border-color: rgba(96,208,240,0.45); }
-.chain-row.is-match .chain-chip.cc2 { border-color: rgba(240,112,144,0.45); }
-.diverge-label {
-font-family: ‘DotGothic16’, monospace;
-font-size: 0.58rem;
-color: #4a4560;
-padding: 2px 10px;
-letter-spacing: 0.1em;
-opacity: 0.55;
-}
+.cc1 { color: #60d0f0; background: rgba(96,208,240,0.12); border: 1px solid rgba(96,208,240,0.25); }
+.cc2 { color: #f07090; background: rgba(240,112,144,0.12); border: 1px solid rgba(240,112,144,0.25); }
+.rdiv { font-size: 0.58rem; color: #4a4560; padding: 2px 10px; opacity: 0.5; }
 
-/* counter */
 .counter { text-align: center; margin-bottom: 16px; }
-.counter-num {
-font-family: ‘DotGothic16’, monospace;
-font-size: 3rem; line-height: 1;
-color: #f0c040;
-text-shadow: 0 0 20px rgba(240,192,64,0.35);
-}
-.counter-of {
-font-size: 0.68rem;
-color: #4a4560;
-letter-spacing: 0.15em;
-margin-top: 4px;
-}
+.cnum { font-size: 3rem; line-height: 1; color: #f0c040; }
+.cof { font-size: 0.68rem; color: #4a4560; letter-spacing: 0.15em; margin-top: 4px; }
 
-/* seq display */
-.seq-display {
-background-color: #16161f;
-border: 1px solid #2a2a38;
-border-radius: 10px;
-padding: 16px 18px;
-margin-bottom: 20px;
-display: -webkit-flex;
-display: flex;
--webkit-align-items: center;
-align-items: center;
--webkit-justify-content: space-between;
-justify-content: space-between;
-gap: 8px;
-min-height: 64px;
-position: relative;
+.seqdis {
+background: #16161f; border: 1px solid #2a2a38;
+border-radius: 10px; padding: 16px 18px; margin-bottom: 20px;
+display: flex; align-items: center; justify-content: space-between; gap: 8px;
+min-height: 64px; position: relative;
 }
-.seq-display::before {
-content: ‘’;
-position: absolute; left: 0; top: 0; bottom: 0;
-width: 3px;
-background-color: #f0c040;
-border-radius: 2px 0 0 2px;
+.seqdis::before {
+content: ‘’; position: absolute; left:0;top:0;bottom:0;
+width: 3px; background: #f0c040; border-radius: 2px 0 0 2px;
 }
-.dir-btn {
--webkit-flex: 1;
-flex: 1;
-height: 38px;
-border-radius: 6px;
-display: -webkit-flex;
-display: flex;
--webkit-align-items: center;
-align-items: center;
--webkit-justify-content: center;
-justify-content: center;
-font-family: ‘DotGothic16’, monospace;
-font-size: 1rem;
-font-weight: bold;
+.dbtn {
+flex: 1; height: 38px; border-radius: 6px;
+display: flex; align-items: center; justify-content: center;
+font-size: 1rem; font-weight: bold;
 }
-.d1 { color: #60d0f0; background-color: rgba(96,208,240,0.1); border: 1px solid rgba(96,208,240,0.25); }
-.d2 { color: #f07090; background-color: rgba(240,112,144,0.1); border: 1px solid rgba(240,112,144,0.25); }
+.d1 { color: #60d0f0; background: rgba(96,208,240,0.12); border: 1px solid rgba(96,208,240,0.25); }
+.d2 { color: #f07090; background: rgba(240,112,144,0.12); border: 1px solid rgba(240,112,144,0.25); }
 
-/* controls */
-.controls {
-display: -webkit-flex;
-display: flex;
-gap: 10px;
+.ctls { display: flex; gap: 10px; }
+.cbtn {
+flex: 1; padding: 13px 8px; border: none; border-radius: 8px;
+font-family: ‘DotGothic16’, monospace; font-size: 0.85rem; cursor: pointer;
 }
-.btn {
--webkit-flex: 1;
-flex: 1;
-padding: 13px 8px;
-border: none;
-border-radius: 8px;
-font-family: ‘DotGothic16’, monospace;
-font-size: 0.85rem;
-cursor: pointer;
-letter-spacing: 0.06em;
--webkit-appearance: none;
-appearance: none;
-}
-.btn:active { opacity: 0.8; }
-.btn-prev {
-background-color: #16161f;
-color: #c8c0d8;
-border: 1px solid #2a2a38;
-}
-.btn-next {
-background-color: #f0c040;
-color: #0e0e14;
-font-weight: bold;
-}
-.btn-reset {
--webkit-flex: 0 0 auto;
-flex: 0 0 auto;
-padding: 13px 16px;
-background-color: transparent;
-color: #4a4560;
-border: 1px solid #2a2a38;
-border-radius: 8px;
-font-family: ‘DotGothic16’, monospace;
-font-size: 0.85rem;
-cursor: pointer;
--webkit-appearance: none;
-appearance: none;
+.cbtn:active { opacity: 0.7; }
+.cprev { background: #16161f; color: #c8c0d8; border: 1px solid #2a2a38; }
+.cnext { background: #f0c040; color: #0e0e14; font-weight: bold; }
+.creset {
+flex: 0 0 auto; padding: 13px 16px;
+background: transparent; color: #4a4560;
+border: 1px solid #2a2a38; border-radius: 8px;
+font-family: ‘DotGothic16’, monospace; font-size: 0.85rem; cursor: pointer;
 }
 </style>
 
@@ -395,41 +155,40 @@ appearance: none;
 <body>
 <div class="wrapper">
 
-  <header>
-    <div class="header-inner">
-      <div class="title">🥚 참참참</div>
-      <div class="sub">TAMAGOTCHI GIMMICK TRACKER</div>
-    </div>
-    <button class="hamburger" id="hamburger" onclick="toggleDrawer()">
-      <span></span><span></span><span></span>
-    </button>
-  </header>
-
-  <div class="drawer-overlay" id="overlay" onclick="closeDrawer()"></div>
-  <div class="drawer" id="drawer">
-    <div class="drawer-title">전체 시퀀스 목록</div>
-    <div class="drawer-list" id="drawer-list"></div>
+<header>
+  <div>
+    <div class="title">🥚 참참참</div>
+    <div class="sub">TAMAGOTCHI GIMMICK TRACKER</div>
   </div>
+  <button class="ham-btn" id="hamBtn">
+    <span></span><span></span><span></span>
+  </button>
+</header>
 
-  <div class="search-wrap">
-    <input class="search-input" id="search-input" type="text" maxlength="5" placeholder="12121"
-      oninput="onSearchInput(this)" onkeydown="if(event.key==='Enter') doSearch()">
-    <button class="btn-search" onclick="doSearch()">찾기</button>
-  </div>
-  <div class="search-hint" id="search-hint">숫자 5자리 입력 후 찾기</div>
-  <div class="result-area" id="result-area"></div>
+<div class="overlay" id="overlay"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-title">전체 시퀀스 목록</div>
+  <div id="drawerList"></div>
+</div>
 
-  <div class="counter">
-    <div class="counter-num" id="cur-num">1</div>
-    <div class="counter-of">/ 18 번째 기믹</div>
-  </div>
-  <div class="seq-display" id="seq-display"></div>
+<div class="search-row">
+  <input class="sinput" id="sinput" type="text" maxlength="5" placeholder="12121">
+  <button class="sbtn" id="sbtn">찾기</button>
+</div>
+<div class="shint" id="shint">숫자 5자리 입력 후 찾기</div>
+<div class="rarea" id="rarea"></div>
 
-  <div class="controls">
-    <button class="btn btn-prev" onclick="move(-1)">◀ 이전</button>
-    <button class="btn btn-next" onclick="move(1)">다음 ▶</button>
-    <button class="btn-reset" onclick="resetAll()">↺</button>
-  </div>
+<div class="counter">
+  <div class="cnum" id="cnum">1</div>
+  <div class="cof">/ 18 번째 기믹</div>
+</div>
+<div class="seqdis" id="seqdis"></div>
+
+<div class="ctls">
+  <button class="cbtn cprev" id="prevBtn">◀ 이전</button>
+  <button class="cbtn cnext" id="nextBtn">다음 ▶</button>
+  <button class="creset" id="resetBtn">↺</button>
+</div>
 
 </div>
 <script>
@@ -440,188 +199,190 @@ var SEQS = [
   [1,1,1,2,1],[2,1,2,2,1],[1,2,1,2,1]
 ];
 var N = SEQS.length;
-var KEY = 'tamago_cur';
-var cur = 0; try { cur = parseInt(localStorage.getItem(KEY) || "0", 10) % N; } catch(e) { cur = 0; }
+var cur = 0;
 
-function save() { try { localStorage.setItem(KEY, String(cur)); } catch(e) {} }
+try { cur = parseInt(localStorage.getItem(‘tg’) || ‘0’, 10) % N; } catch(e){}
+
+function save() { try { localStorage.setItem(‘tg’, String(cur)); } catch(e){} }
+
 function sk(s) { return s.join(’’); }
 
-function buildDrawer() {
-var list = document.getElementById(‘drawer-list’);
-var html = ‘’;
-for (var i = 0; i < SEQS.length; i++) {
-var seq = SEQS[i];
-var chips = ‘’;
-for (var j = 0; j < seq.length; j++) {
-chips += ‘<div class="chip c' + seq[j] + '">’ + seq[j] + ‘</div>’;
-}
-var isc = i === cur;
-html += ‘<div class="drawer-row' + (isc ? ' is-current' : '') + '" onclick="jumpTo(' + i + ');closeDrawer()">’
-+ ‘<span class="drawer-num">’ + (i+1) + ‘</span>’
-+ ‘<div class="drawer-seq">’ + chips + ‘</div>’
-+ (isc ? ‘<span class="cur-arrow">◀ 현재</span>’ : ‘’)
-+ ‘</div>’;
-}
-list.innerHTML = html;
-}
-
-function toggleDrawer() {
-var drawer = document.getElementById(‘drawer’);
-var overlay = document.getElementById(‘overlay’);
-var ham = document.getElementById(‘hamburger’);
-var isOpen = drawer.classList.contains(‘open’);
-if (isOpen) {
-drawer.classList.remove(‘open’);
-overlay.classList.remove(‘show’);
-ham.classList.remove(‘open’);
-} else {
-drawer.classList.add(‘open’);
-overlay.classList.add(‘show’);
-ham.classList.add(‘open’);
-buildDrawer();
-}
-}
-function closeDrawer() {
-document.getElementById(‘drawer’).classList.remove(‘open’);
-document.getElementById(‘overlay’).classList.remove(‘show’);
-document.getElementById(‘hamburger’).classList.remove(‘open’);
+function chipH(d, big) {
+var cls = big ? (‘cchip cc’ + d) : (‘chip c’ + d);
+return ‘<div class="' + cls + '">’ + d + ‘</div>’;
 }
 
 function render() {
-document.getElementById(‘cur-num’).textContent = String(cur + 1);
-var html = ‘’;
-for (var i = 0; i < SEQS[cur].length; i++) {
-var d = SEQS[cur][i];
-html += ‘<div class="dir-btn d' + d + '">’ + d + ‘</div>’;
-}
-document.getElementById(‘seq-display’).innerHTML = html;
-var rows = document.querySelectorAll(’.chain-row[data-idx]’);
+document.getElementById(‘cnum’).textContent = String(cur + 1);
+var h = ‘’;
+for (var i = 0; i < SEQS[cur].length; i++) h += ‘<div class="dbtn d' + SEQS[cur][i] + '">’ + SEQS[cur][i] + ‘</div>’;
+document.getElementById(‘seqdis’).innerHTML = h;
+var rows = document.querySelectorAll(’.crow’);
 for (var i = 0; i < rows.length; i++) {
-var idx = parseInt(rows[i].getAttribute(‘data-idx’));
-if (idx === cur) rows[i].classList.add(‘is-current’);
-else rows[i].classList.remove(‘is-current’);
+var idx = parseInt(rows[i].getAttribute(‘data-i’));
+if (idx === cur) rows[i].className = rows[i].className.replace(’ cur’,’’) + ’ cur’;
+else rows[i].className = rows[i].className.replace(’ cur’,’’);
+}
+var drows = document.querySelectorAll(’.drow’);
+for (var i = 0; i < drows.length; i++) {
+if (i === cur) drows[i].className = ‘drow cur’;
+else drows[i].className = ‘drow’;
+var lbl = drows[i].querySelector(’.drow-cur-label’);
+if (lbl) lbl.style.display = i === cur ? ‘’ : ‘none’;
 }
 }
 
-function move(dir) { cur = (cur + dir + N) % N; save(); render(); }
-function jumpTo(idx) { cur = idx; save(); render(); }
-
-function resetAll() {
-cur = 0; save();
-document.getElementById(‘result-area’).innerHTML = ‘’;
-document.getElementById(‘search-hint’).textContent = ‘숫자 5자리 입력 후 찾기’;
-document.getElementById(‘search-hint’).className = ‘search-hint’;
-document.getElementById(‘search-input’).value = ‘’;
-document.getElementById(‘search-input’).className = ‘search-input’;
-render();
-}
-
-function onSearchInput(el) {
-el.value = el.value.replace(/[^12]/g, ‘’);
-el.className = ‘search-input’;
-document.getElementById(‘search-hint’).textContent = ‘숫자 5자리 입력 후 찾기’;
-document.getElementById(‘search-hint’).className = ‘search-hint’;
-}
-
-function makeChainRow(idx, isMatch) {
-var isc = idx === cur;
-var cls = ‘chain-row’ + (isMatch ? ’ is-match’ : ‘’) + (isc ? ’ is-current’ : ‘’);
+function buildDrawer() {
+var h = ‘’;
+for (var i = 0; i < N; i++) {
 var chips = ‘’;
-for (var j = 0; j < SEQS[idx].length; j++) {
-var d = SEQS[idx][j];
-chips += ‘<div class="chain-chip cc' + d + '">’ + d + ‘</div>’;
+for (var j = 0; j < SEQS[i].length; j++) chips += chipH(SEQS[i][j], false);
+h += ‘<div class="drow' + (i===cur?' cur':'') + '" data-i="' + i + '">’
++ ‘<span class="drow-num">’ + (i+1) + ‘</span>’
++ ‘<div class="drow-chips">’ + chips + ‘</div>’
++ ‘<span class=“drow-cur-label”’ + (i!==cur?’ style=“display:none”’:’’) + ‘>◀ 현재</span>’
++ ‘</div>’;
 }
-return ‘<div class="' + cls + '" data-idx="' + idx + '" onclick="jumpTo(' + idx + ')">’
-+ ‘<span class="chain-num">’ + (idx+1) + ‘</span>’
-+ ‘<div class="chain-seq">’ + chips + ‘</div>’
+document.getElementById(‘drawerList’).innerHTML = h;
+var drows = document.querySelectorAll(’.drow’);
+for (var i = 0; i < drows.length; i++) {
+(function(idx) {
+drows[idx].addEventListener(‘click’, function() { cur=idx; save(); render(); closeDrawer(); });
+})(i);
+}
+}
+
+function openDrawer() {
+buildDrawer();
+document.getElementById(‘drawer’).className = ‘drawer on’;
+document.getElementById(‘overlay’).className = ‘overlay on’;
+}
+function closeDrawer() {
+document.getElementById(‘drawer’).className = ‘drawer’;
+document.getElementById(‘overlay’).className = ‘overlay’;
+}
+
+document.getElementById(‘hamBtn’).addEventListener(‘click’, function() {
+if (document.getElementById(‘drawer’).className.indexOf(‘on’) > -1) closeDrawer();
+else openDrawer();
+});
+document.getElementById(‘overlay’).addEventListener(‘click’, closeDrawer);
+
+document.getElementById(‘prevBtn’).addEventListener(‘click’, function() {
+cur = (cur - 1 + N) % N; save(); render();
+});
+document.getElementById(‘nextBtn’).addEventListener(‘click’, function() {
+cur = (cur + 1) % N; save(); render();
+});
+document.getElementById(‘resetBtn’).addEventListener(‘click’, function() {
+cur = 0; save();
+document.getElementById(‘rarea’).innerHTML = ‘’;
+document.getElementById(‘shint’).textContent = ‘숫자 5자리 입력 후 찾기’;
+document.getElementById(‘shint’).className = ‘shint’;
+document.getElementById(‘sinput’).value = ‘’;
+document.getElementById(‘sinput’).className = ‘sinput’;
+render();
+});
+
+document.getElementById(‘sinput’).addEventListener(‘input’, function() {
+this.value = this.value.replace(/[^12]/g, ‘’);
+this.className = ‘sinput’;
+document.getElementById(‘shint’).textContent = ‘숫자 5자리 입력 후 찾기’;
+document.getElementById(‘shint’).className = ‘shint’;
+});
+document.getElementById(‘sinput’).addEventListener(‘keydown’, function(e) {
+if (e.key === ‘Enter’) doSearch();
+});
+document.getElementById(‘sbtn’).addEventListener(‘click’, doSearch);
+
+function makeCrow(idx, isMatch) {
+var cls = ‘crow’ + (isMatch?’ match’:’’) + (idx===cur?’ cur’:’’);
+var chips = ‘’;
+for (var j = 0; j < SEQS[idx].length; j++) chips += chipH(SEQS[idx][j], true);
+return ‘<div class="' + cls + '" data-i="' + idx + '">’
++ ‘<span class="crow-num">’ + (idx+1) + ‘</span>’
++ ‘<div class="crow-chips">’ + chips + ‘</div>’
 + ‘</div>’;
 }
 
 function doSearch() {
-var raw = document.getElementById(‘search-input’).value.trim();
-var hint = document.getElementById(‘search-hint’);
-var area = document.getElementById(‘result-area’);
-var inp  = document.getElementById(‘search-input’);
-
+var raw = document.getElementById(‘sinput’).value.trim();
+var hint = document.getElementById(‘shint’);
+var area = document.getElementById(‘rarea’);
 if (raw.length !== 5) {
-inp.className = ‘search-input error’;
-hint.textContent = ‘5자리를 모두 입력해줘 (예: 12121)’;
-hint.className = ‘search-hint notfound’;
+document.getElementById(‘sinput’).className = ‘sinput err’;
+hint.textContent = ‘5자리 입력해줘 (예: 12121)’;
+hint.className = ‘shint no’;
 area.innerHTML = ‘’; return;
 }
-
-var query = raw.split(’’).map(Number);
+var q = raw.split(’’).map(Number);
 var matches = [];
-for (var i = 0; i < SEQS.length; i++) {
+for (var i = 0; i < N; i++) {
 var ok = true;
-for (var j = 0; j < 5; j++) { if (SEQS[i][j] !== query[j]) { ok = false; break; } }
+for (var j = 0; j < 5; j++) if (SEQS[i][j] !== q[j]) { ok=false; break; }
 if (ok) matches.push(i);
 }
-
 if (!matches.length) {
-inp.className = ‘search-input error’;
+document.getElementById(‘sinput’).className = ‘sinput err’;
 hint.textContent = ‘일치하는 시퀀스 없음’;
-hint.className = ‘search-hint notfound’;
+hint.className = ‘shint no’;
 area.innerHTML = ‘’; return;
 }
+document.getElementById(‘sinput’).className = ‘sinput’;
+hint.textContent = matches.length > 1 ? (matches.length + ‘곳 발견’) : ‘1곳 발견’;
+hint.className = ‘shint ok’;
 
-inp.className = ‘search-input’;
-hint.textContent = matches.length > 1 ? (matches.length + ‘곳 발견 — 이후 시퀀스 비교’) : ‘1곳 발견 — 이후 시퀀스’;
-hint.className = ‘search-hint found’;
-
-// 각 매칭마다 이후 체인
 var chains = [];
 for (var m = 0; m < matches.length; m++) {
 var mi = matches[m];
 var chain = [mi];
 for (var k = 1; k < N; k++) {
-var next = (mi + k) % N;
-if (next === mi) break;
-chain.push(next);
+var nx = (mi + k) % N;
+if (nx === mi) break;
+chain.push(nx);
 }
 chains.push(chain);
 }
 
 var cutLen;
 if (matches.length === 1) {
-var c = chains[0];
-cutLen = c.length;
-for (var k = 1; k < c.length; k++) {
-if (sk(SEQS[c[k]]) === raw) { cutLen = k + 1; break; }
+cutLen = chains[0].length;
+for (var k = 1; k < chains[0].length; k++) {
+if (sk(SEQS[chains[0][k]]) === raw) { cutLen = k + 1; break; }
 }
 } else {
+var minLen = chains[0].length;
+for (var m = 1; m < chains.length; m++) if (chains[m].length < minLen) minLen = chains[m].length;
 var divergeAt = 1;
-var minLen = Math.min.apply(null, chains.map(function(c){ return c.length; }));
 for (var k = 1; k < minLen; k++) {
-var vals = chains.map(function(c){ return sk(SEQS[c[k]]); });
-var allSame = vals.every(function(v){ return v === vals[0]; });
+var v0 = sk(SEQS[chains[0][k]]);
+var same = true;
+for (var m = 1; m < chains.length; m++) if (sk(SEQS[chains[m][k]]) !== v0) { same=false; break; }
 divergeAt = k;
-if (!allSame) break;
+if (!same) break;
 }
 cutLen = divergeAt + 1;
 }
 
-var html = ‘’;
-if (matches.length === 1) {
-html += ‘<div class="result-group"><div class="chain">’;
-var slice = chains[0].slice(0, cutLen);
-for (var ci = 0; ci < slice.length; ci++) {
-if (ci === 1) html += ‘<div class="diverge-label">↓ 이후</div>’;
-html += makeChainRow(slice[ci], ci === 0);
-}
-html += ‘</div></div>’;
-} else {
+var h = ‘’;
 for (var gi = 0; gi < chains.length; gi++) {
-html += ’<div class="result-group"><div class="result-group-label">발견 ’ + (gi+1) + ’ — ’ + (chains[gi][0]+1) + ‘번째</div><div class="chain">’;
+var label = matches.length > 1 ? (’발견 ’ + (gi+1) + ’ — ’ + (chains[gi][0]+1) + ‘번째’) : ((chains[gi][0]+1) + ‘번째’);
+h += ‘<div class="rgroup"><div class="rlabel">’ + label + ‘</div><div class="rchain">’;
 var slice = chains[gi].slice(0, cutLen);
 for (var ci = 0; ci < slice.length; ci++) {
-if (ci === 1) html += ‘<div class="diverge-label">↓ 이후</div>’;
-html += makeChainRow(slice[ci], ci === 0);
+if (ci === 1) h += ‘<div class="rdiv">↓ 이후</div>’;
+h += makeCrow(slice[ci], ci === 0);
 }
-html += ‘</div></div>’;
+h += ‘</div></div>’;
 }
+area.innerHTML = h;
+
+var crows = area.querySelectorAll(’.crow’);
+for (var i = 0; i < crows.length; i++) {
+(function(el, idx) {
+el.addEventListener(‘click’, function() { cur=idx; save(); render(); });
+})(crows[i], parseInt(crows[i].getAttribute(‘data-i’)));
 }
-area.innerHTML = html;
 }
 
 render();
