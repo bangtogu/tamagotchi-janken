@@ -309,30 +309,28 @@ function doSearch() {
   hint.textContent = matches.length > 1 ? `${matches.length}곳 발견` : "1곳 발견";
   hint.className = "shint ok";
 
-  // 분기점 계산: 모든 매치에서 다음 시퀀스가 달라지는 가장 빠른 offset 찾기
-  let cutLen = N; // 최대값으로 시작
+  let showUpTo = 5;  // 기본 5개
+
   if (matches.length > 1) {
-    for (let offset = 0; offset < N; offset++) { // 0부터 검사 (안전하게)
+    let divergeAt = N;
+    for (let offset = 0; offset < N; offset++) {
       const first = SEQS[(matches[0] + offset) % N].join("");
       let allSame = true;
       for (let m = 1; m < matches.length; m++) {
         const curr = SEQS[(matches[m] + offset) % N].join("");
         if (curr !== first) {
           allSame = false;
+          divergeAt = offset;
           break;
         }
       }
-      if (!allSame) {
-        cutLen = offset; // 분기가 시작되는 offset (여기까지만 보여줌)
-        break;
-      }
+      if (!allSame) break;
     }
-  } else {
-    cutLen = 5; // 한 곳이면 5개만 보여줌
+    // 분기 시작점(offset)까지 포함 (바로 다음 하나 보이게)
+    showUpTo = divergeAt + 1;
   }
 
-  // cutLen이 0이면 이상하니 최소 5개 보장
-  cutLen = Math.max(cutLen, 5);
+  showUpTo = Math.max(showUpTo, 2);  // 최소 2개 (현재 + 다음 하나)
 
   let h = "";
   matches.forEach((startIdx, gi) => {
@@ -342,15 +340,13 @@ function doSearch() {
 
     h += `<div class="rgroup"><div class="rlabel">${label}</div><div class="rchain">`;
 
-    for (let offset = 0; offset < cutLen; offset++) {
+    for (let offset = 0; offset < showUpTo; offset++) {
       const idx = (startIdx + offset) % N;
-      if (offset === 1) h += `<div class="rdiv">↓ 이후</div>`;
+      if (offset === 1) h += `<div class="rdiv">↓ 다음</div>`;
       h += makeCrow(idx, offset === 0);
     }
 
-    if (matches.length > 1 && cutLen < N) {
-      h += `<div class="rdiv">→ 여기서부터 분기됨</div>`;
-    } else if (matches.length === 1) {
+    if (matches.length === 1) {
       h += `<div class="rdiv">→ 이후 무한 반복</div>`;
     }
 
