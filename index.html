@@ -319,20 +319,57 @@ function doSearch() {
   hint.textContent = matches.length > 1 ? `${matches.length}곳 발견` : "1곳 발견";
   hint.className = "shint ok";
 
-  let h = "";
-  matches.forEach((mi, gi) => {
-    const label = matches.length > 1 ? `발견 ${gi + 1} — ${mi + 1}번째` : `${mi + 1}번째`;
-    h += `<div class="rgroup"><div class="rlabel">${label}</div><div class="rchain">`;
-    for (let k = 0; k < N; k++) {
-      const idx = (mi + k) % N;
-      if (k === 1) h += `<div class="rdiv">↓ 이후</div>`;
-      h += makeCrow(idx, k === 0);
-      if (k >= 5) break;  // 너무 길어지지 않게 제한 (원래 로직보다 단순화)
+  // 분기점(최소 공통 접두사 길이) 계산
+  let cutLen = N;  // 최대 길이부터 시작
+  if (matches.length > 1) {
+    // 모든 매치된 시작점에서부터의 시퀀스 비교
+    for (let k = 5; k < N; k++) {  // 이미 0~4는 같으니까 5부터
+      const first = sk(SEQS[(matches[0] + k) % N]);
+      let same = true;
+      for (let m = 1; m < matches.length; m++) {
+        if (sk(SEQS[(matches[m] + k) % N]) !== first) {
+          same = false;
+          break;
+        }
+      }
+      if (!same) {
+        cutLen = k;  // 여기서부터 달라짐 → k번째에서 끊음
+        break;
+      }
     }
+  } else {
+    // 단일 매치 → 무한 반복이라도 5개 이후는 "반복" 표시로 충분
+    cutLen = 5;
+  }
+
+  let h = "";
+  matches.forEach((startIdx, gi) => {
+    const label = matches.length > 1 
+      ? `발견 ${gi + 1} — ${startIdx + 1}번째 시작`
+      : `${startIdx + 1}번째`;
+
+    h += `<div class="rgroup"><div class="rlabel">${label}</div><div class="rchain">`;
+
+    for (let offset = 0; offset < cutLen; offset++) {
+      const idx = (startIdx + offset) % N;
+      if (offset === 1) {
+        h += `<div class="rdiv">↓ 이후</div>`;
+      }
+      h += makeCrow(idx, offset === 0);
+    }
+
+    if (cutLen < N && matches.length > 1) {
+      h += `<div class="rdiv">→ 여기서부터 분기됨</div>`;
+    } else if (matches.length === 1) {
+      h += `<div class="rdiv">→ 이후 무한 반복</div>`;
+    }
+
     h += "</div></div>";
   });
+
   area.innerHTML = h;
 
+  // 클릭 이벤트 재설정
   document.querySelectorAll(".crow").forEach(el => {
     el.addEventListener("click", () => {
       cur = parseInt(el.dataset.i, 10);
