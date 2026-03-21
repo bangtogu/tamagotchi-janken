@@ -290,7 +290,6 @@ function doSearch() {
     return;
   }
 
-  const q = raw.split("").map(Number);
   const matches = [];
   for (let i = 0; i < N; i++) {
     if (SEQS[i].join("") === raw) {
@@ -310,23 +309,30 @@ function doSearch() {
   hint.textContent = matches.length > 1 ? `${matches.length}곳 발견` : "1곳 발견";
   hint.className = "shint ok";
 
-  // 분기점 찾기
-  let cutLen = 5;  // 기본 5개
+  // 분기점 계산: 모든 매치에서 다음 시퀀스가 달라지는 가장 빠른 offset 찾기
+  let cutLen = N; // 최대값으로 시작
   if (matches.length > 1) {
-    let divergeAt = 5;
-    outerLoop:
-    for (let offset = 5; offset < N; offset++) {
+    for (let offset = 0; offset < N; offset++) { // 0부터 검사 (안전하게)
       const first = SEQS[(matches[0] + offset) % N].join("");
+      let allSame = true;
       for (let m = 1; m < matches.length; m++) {
         const curr = SEQS[(matches[m] + offset) % N].join("");
         if (curr !== first) {
-          divergeAt = offset;
-          break outerLoop;
+          allSame = false;
+          break;
         }
       }
+      if (!allSame) {
+        cutLen = offset; // 분기가 시작되는 offset (여기까지만 보여줌)
+        break;
+      }
     }
-    cutLen = divergeAt;
+  } else {
+    cutLen = 5; // 한 곳이면 5개만 보여줌
   }
+
+  // cutLen이 0이면 이상하니 최소 5개 보장
+  cutLen = Math.max(cutLen, 5);
 
   let h = "";
   matches.forEach((startIdx, gi) => {
